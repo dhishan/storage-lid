@@ -1,8 +1,9 @@
 ---
 page_type: sample
-description: "A minimal sample app that can be used to demonstrate deploying Flask apps to Azure App Service on Linux."
+description: "A minimal app that can be used to demonstrate accessing storage blobs using webapp"
 languages:
 - python
+- terraform
 products:
 - azure
 - azure-app-service
