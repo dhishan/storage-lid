@@ -4,12 +4,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- main
+  paths:
+    include:
+    - App/*
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
   azureServiceConnectionId: '69f062cb-21b3-4513-ade5-bb74d20f5d3f'
-
+  
   # Web app name
   webAppName: 'storageaccessdhishan'
 
