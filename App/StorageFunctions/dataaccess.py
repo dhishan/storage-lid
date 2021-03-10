@@ -17,4 +17,4 @@ def get_user_object(name):
     download_data = blob_client.download_blob()
     return download_data.content_as_text(max_concurrency=1, encoding='UTF-8')
 
-print(get_user_object("user1.json"))
+# print(get_user_object("user1.json"))
