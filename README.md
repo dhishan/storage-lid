@@ -9,8 +9,18 @@ products:
 - azure-app-service
 ---
 
-# Python Flask sample for Azure App Service (Linux)
+# Deploying Webapp manually
 
+1. Create a webapp in the portal
+1. az login
+1. Create a deployment url
+```bash
+az webapp deployment source config-local-git --name storageaccessdhishan --resource-group webapp-storage-ui-rg
+```
+1. Upload the local folder to webapp
+```bash
+
+```
 This is a minimal Flask app that can be deployed to Azure App Service on Linux.
 
 For instructions on running and deploying the code, see [Quickstart: Create a Python app in Azure App Service on Linux](https://docs.microsoft.com/azure/app-service/quickstart-python).
