@@ -1,0 +1,126 @@
+---
+swagger: "2.0"
+info:
+  description: "Sample Server which serves the data from storage account"
+  version: "1.0.0"
+  title: "Azure Storage Access through a RestApI"
+basePath: "/api"
+tags:
+- name: "Org"
+  description: "Access to Organizations"
+- name: "User"
+  description: "Operations about user"
+schemes:
+- "https"
+- "http"
+paths:
+  /orgs:
+    get:
+      tags:
+        - "Org"
+      operationId: "controllers.org.list_all"
+      summary: "List all Orgs"
+      description: ""
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "List of Orgs"
+          schema:
+            type: array
+            items:
+              type: string
+  /orgs/{name}:
+    get:
+      tags:
+      - "Org"
+      operationId: "controllers.org.get"
+      summary: "Add a new ou to the store"
+      description: ""
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "OU object that needs to be added to the storage"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            $ref: "#/definitions/org"
+  /users:
+    get:
+      tags:
+        - "User"
+      operationId: "controllers.user.list_all"
+      summary: "List all Users"
+      description: ""
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "List of Users"
+          schema:
+            type: array
+            items:
+              type: string
+  /users/{name}:
+    get:
+      tags:
+      - "User"
+      summary: "Find user by name"
+      description: "Returns a single file"
+      operationId: "controllers.user.get"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "Name of the User"
+        required: true
+        type: "string"
+        format: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/user"
+        "400":
+          description: "Invalid Name supplied"
+          schema:
+            $ref: '#/definitions/notfound'
+        "404":
+          description: "User not found"
+definitions:
+  org:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        format: "string"
+      id:
+        type: "integer"
+        format: "integer"
+    example:
+      name: "name"
+      id: 0
+  user:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        format: "string"
+      id:
+        type: "string"
+        format: "string"
+    example:
+      name: "name"
+      id: 1
+  notfound:
+    type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
