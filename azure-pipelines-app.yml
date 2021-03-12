@@ -8,9 +8,6 @@ trigger:
   branches:
   - master
   - swagger
-  paths:
-    include:
-    - App/*
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
