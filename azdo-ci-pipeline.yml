@@ -1,0 +1,10 @@
+name: "CI Pipeline"
+
+trigger:
+  branches:
+    include:
+    - infra
+
+pool:
+  vmImage: "ubuntu-16.04"
+
