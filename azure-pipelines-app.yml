@@ -6,8 +6,12 @@ name: "App Service Pipeline"
 
 trigger:
   branches:
-  - master
-  - swagger
+    include:
+    - master
+    - swagger
+  paths:
+    include:
+    - App/*
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
