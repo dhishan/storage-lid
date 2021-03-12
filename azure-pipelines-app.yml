@@ -5,6 +5,9 @@
 name: "App Service Pipeline"
 
 trigger:
+  branches:
+  - master
+  - swagger
   paths:
     include:
     - App/*
