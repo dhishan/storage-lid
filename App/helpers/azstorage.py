@@ -3,8 +3,8 @@ from azure.storage.blob import BlobServiceClient
 import os, json
 
 def blob_service_client():
-    # storage_account_url = os.environ['STORAGE_URI']
-    storage_account_url = "https://datastrdhishan.blob.core.windows.net/"
+    storage_account_url = os.environ['STORAGE_URI']
+    # storage_account_url = "https://datastrdhishan.blob.core.windows.net/"
     token_credential = DefaultAzureCredential()
     return BlobServiceClient(
                 account_url=storage_account_url,
