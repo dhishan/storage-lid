@@ -13,7 +13,7 @@ variables:
 - name: environment
 
 jobs:
-- job: "Terraform Init"
+- job: "Infrastructure"
   steps:
   - task: TerraformInstaller@0
     inputs:
