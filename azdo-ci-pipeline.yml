@@ -18,6 +18,11 @@ jobs:
   - task: TerraformInstaller@0
     inputs:
       terraformVersion: 'latest'
+  - task: CmdLine@2
+    inputs:
+      script: |
+        terraform version
+        ls -la
   - task: TerraformCLI@0
     inputs:
       command: 'init'
@@ -32,11 +37,7 @@ jobs:
   #   inputs:
   #     command: 'validate'
   #     workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
-  - task: CmdLine@2
-    inputs:
-      script: |
-        terraform version
-        ls -la
+  
           
   - task: TerraformCLI@0
     inputs:
