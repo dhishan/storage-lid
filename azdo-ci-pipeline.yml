@@ -21,4 +21,5 @@ jobs:
   - task: TerraformCLI@0
     inputs:
       command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)\Infra'
       environmentServiceName: 'SC1'
