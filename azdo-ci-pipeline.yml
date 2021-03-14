@@ -18,8 +18,14 @@ jobs:
   - task: TerraformInstaller@0
     inputs:
       terraformVersion: 'latest'
+  - task: CmdLine@2
+    inputs:
+      script: |
+        pwd
+        ls -la
+          
   - task: TerraformCLI@0
     inputs:
       command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)\Infra'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
       environmentServiceName: 'SC1'
