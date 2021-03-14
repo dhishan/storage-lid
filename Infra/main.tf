@@ -77,7 +77,7 @@ resource "azurerm_key_vault" "kv" {
 }
 
 resource "azurerm_key_vault_secret" "appservicesecret" {
-  name         = "spn_secret"
+  name         = "spn-secret"
   value        = random_password.password.result
   key_vault_id = azurerm_key_vault.kv.id
 }
@@ -91,7 +91,6 @@ resource "azuread_application" "app" {
   reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback",var.webapp_name)]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
-  type                       = "webapp/api"
   owners                     = ["00000004-0000-0000-c000-000000000000"]
 
   # required_resource_access {
