@@ -3,7 +3,7 @@ name: "CI Pipeline"
 trigger:
   branches:
     include:
-    - infra
+    - main
 
 pool:
   vmImage: "ubuntu-16.04"
@@ -18,6 +18,10 @@ jobs:
   - task: TerraformInstaller@0
     inputs:
       terraformVersion: 'latest'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'validate'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
   - task: CmdLine@2
     inputs:
       script: |
