@@ -8,3 +8,18 @@ trigger:
 pool:
   vmImage: "ubuntu-16.04"
 
+
+variables:
+- name: environment
+
+jobs:
+- job: "Infrastructure"
+  steps:
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: 'latest'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)\Infra'
+      environmentServiceName: 'SC1'
