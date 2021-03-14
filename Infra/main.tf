@@ -44,7 +44,8 @@ provider "azuread" {
 #     virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
 #   }
 # }
-
+data "azurerm_client_config" "current" {
+}
 
 # Key Vault
 resource "azurerm_key_vault" "kv" {
