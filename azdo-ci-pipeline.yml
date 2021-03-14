@@ -45,3 +45,5 @@ jobs:
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
       environmentServiceName: 'SC1'
+
+      
