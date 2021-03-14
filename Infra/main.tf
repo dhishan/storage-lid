@@ -130,7 +130,7 @@ resource "azuread_application_password" "passwrd" {
 
 
 resource "azuread_application" "payments_api" {
-    name                       = "payments_api"
+    display_name               = "payments_api"
     available_to_other_tenants = false
     oauth2_allow_implicit_flow = false
     type                       = "webapp/api"
