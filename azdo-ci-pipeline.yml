@@ -63,13 +63,32 @@ jobs:
      inputs:
          notifyUsers: |
             iamdhishan@gmail.com
-         instructions: 'Please validate the terraform plan'
+         instructions: 'Please validate the terraform plan for ${TERRAFORM_ACTION}'
          onTimeout: reject
 
 - job: deploy
+  dependsOn: waitForValidation
   steps:
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: 'latest'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      backendType: 'azurerm'
+      backendServiceArm: 'SC1'
+      backendAzureRmResourceGroupName: 'statefiles-store-rg'
+      backendAzureRmStorageAccountName: 'statefilesstore'
+      backendAzureRmContainerName: 'storage-lid'
+      backendAzureRmKey: 'Infra'
+  # - task: TerraformCLI@1
+  #   inputs:
+  #     command: ${TERRAFORM_ACTION}
+  #     workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+  #     environmentServiceName: 'SC1'
   - task: "CmdLine@2"
     inputs:
       script: |
-        terraform version
+        echo ${TERRAFORM_ACTION}
 
