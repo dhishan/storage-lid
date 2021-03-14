@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    azurerm = {}
-    azuread = {
-    }
-  }
-}
-
 provider "azurerm" {
   features {}
 }
