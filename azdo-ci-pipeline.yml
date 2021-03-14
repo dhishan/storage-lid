@@ -21,4 +21,4 @@ jobs:
   - task: TerraformCLI@0
     inputs:
       command: 'plan'
-      environmentServiceName: 'Visual Studio Enterprise (c996be46-cd38-4bdf-8180-17d60b8e8e53)'
+      environmentServiceName: 'SC1'
