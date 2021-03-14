@@ -63,7 +63,7 @@ jobs:
      inputs:
          notifyUsers: |
             iamdhishan@gmail.com
-         instructions: 'Please validate the terraform plan for ${TERRAFORM_ACTION}'
+         instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
          onTimeout: reject
 
 - job: deploy
@@ -90,5 +90,5 @@ jobs:
   - task: "CmdLine@2"
     inputs:
       script: |
-        echo ${TERRAFORM_ACTION}
+        echo $(TERRAFORM_ACTION)
 
