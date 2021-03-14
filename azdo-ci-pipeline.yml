@@ -13,7 +13,7 @@ variables:
 - name: environment
 
 jobs:
-- job: "Infrastructure"
+- job: tfSetup
   steps:
   - task: TerraformInstaller@0
     inputs:
@@ -53,6 +53,7 @@ jobs:
   #     onTimeout: reject
 
 - job: waitForValidation
+  dependsOn: tfSetup
   displayName: "Wait for validation"
   pool: server
   timeoutInMinutes: 4320 # job times out in 3 days
