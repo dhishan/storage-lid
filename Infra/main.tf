@@ -49,7 +49,7 @@ data "azurerm_client_config" "current" {
 
 # Key Vault
 resource "azurerm_key_vault" "kv" {
-  name                       = ormat("%s-kv",var.webapp_name)
+  name                       = format("%s-kv",var.webapp_name)
   location                   = azurerm_resource_group.webapp.location
   resource_group_name        = azurerm_resource_group.webapp.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
