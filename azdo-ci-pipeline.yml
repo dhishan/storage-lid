@@ -52,8 +52,22 @@ jobs:
       emailRecipients: 'iamdhishan@gmail.com'
       onTimeout: reject
 
+- job: "Wait for Validation"
+  pool: server
+  timeoutInMinutes: 4320 # job times out in 3 days
+  steps:   
+   - task: ManualValidation@0
+     timeoutInMinutes: 1440 # task times out in 1 day
+     inputs:
+         notifyUsers: |
+            iamdhishan@gmail.com
+         instructions: 'Please validate the terraform plan'
+         onTimeout: reject
+
+- job: Deploy
+  steps:
   - task: "CmdLine@2"
     inputs:
       script: |
-        echo "Good Bye"
+        terraform version
 
