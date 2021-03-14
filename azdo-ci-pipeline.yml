@@ -20,6 +20,16 @@ jobs:
       terraformVersion: 'latest'
   - task: TerraformCLI@0
     inputs:
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)\Infra'
+      backendType: 'azurerm'
+      backendServiceArm: 'SC1'
+      backendAzureRmResourceGroupName: 'statefiles-store-rg'
+      backendAzureRmStorageAccountName: 'statefilesstore'
+      backendAzureRmContainerName: 'storage-lid'
+      backendAzureRmKey: 'Infra'
+  - task: TerraformCLI@0
+    inputs:
       command: 'validate'
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
   - task: CmdLine@2
