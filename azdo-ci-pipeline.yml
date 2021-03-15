@@ -68,6 +68,8 @@ jobs:
 
 - job: deploy
   dependsOn: waitForValidation
+  pool:
+    vmImage: "ubuntu-16.04"
   steps:
   - task: TerraformInstaller@0
     inputs:
@@ -82,11 +84,11 @@ jobs:
       backendAzureRmStorageAccountName: 'statefilesstore'
       backendAzureRmContainerName: 'storage-lid'
       backendAzureRmKey: 'Infra'
-  # - task: TerraformCLI@1
-  #   inputs:
-  #     command: ${TERRAFORM_ACTION}
-  #     workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
-  #     environmentServiceName: 'SC1'
+  - task: TerraformCLI@1
+    inputs:
+      command: ${TERRAFORM_ACTION}
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      environmentServiceName: 'SC1'
   - task: "CmdLine@2"
     inputs:
       script: |
