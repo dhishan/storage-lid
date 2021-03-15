@@ -84,7 +84,7 @@ jobs:
       backendAzureRmStorageAccountName: 'statefilesstore'
       backendAzureRmContainerName: 'storage-lid'
       backendAzureRmKey: 'Infra'
-  - task: TerraformCLI@1
+  - task: TerraformCLI@0
     inputs:
       command: ${TERRAFORM_ACTION}
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
