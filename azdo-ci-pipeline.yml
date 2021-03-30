@@ -86,7 +86,7 @@ jobs:
       backendAzureRmKey: 'Infra'
   - task: TerraformCLI@0
     inputs:
-      command: ${TERRAFORM_ACTION}
+      command: $(TERRAFORM_ACTION)
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
       environmentServiceName: 'SC1'
   - task: "CmdLine@2"
