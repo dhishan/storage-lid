@@ -1,5 +1,7 @@
 # secrets file
 secrets.sh
+secrets_1.sh
+workspace.*
 
 # Local .terraform directories
 **/.terraform/*
