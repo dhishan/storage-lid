@@ -33,7 +33,7 @@ jobs:
       backendAzureRmResourceGroupName: 'statefiles-store-rg'
       backendAzureRmStorageAccountName: 'statefilesstore'
       backendAzureRmContainerName: 'storage-lid'
-      backendAzureRmKey: 'Infra'
+      backendAzureRmKey: 'Infra.tfstate'
   
   - task: TerraformCLI@0
     inputs:
@@ -83,7 +83,7 @@ jobs:
       backendAzureRmResourceGroupName: 'statefiles-store-rg'
       backendAzureRmStorageAccountName: 'statefilesstore'
       backendAzureRmContainerName: 'storage-lid'
-      backendAzureRmKey: 'Infra'
+      backendAzureRmKey: 'infra.tfstate'
   - task: TerraformCLI@0
     inputs:
       command: $(TERRAFORM_ACTION)
