@@ -84,6 +84,7 @@ jobs:
       backendAzureRmStorageAccountName: 'statefilesstore'
       backendAzureRmContainerName: 'storage-lid'
       backendAzureRmKey: 'infra.tfstate'
+      environmentServiceName: 'SC1'
   - task: TerraformCLI@0
     inputs:
       command: $(TERRAFORM_ACTION)
