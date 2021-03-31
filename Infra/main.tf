@@ -120,14 +120,14 @@ resource "azurerm_key_vault_secret" "appservicesecret" {
 #     value                      = "user_impersonation"
 #   }
 # }
-# resource "random_password" "password" {
-#   length           = 32
-#   special          = true
-#   number           = true
-#   upper            = true
-#   lower            = true
-#   override_special = "$-_%@#+="
-# }
+resource "random_password" "password" {
+  length           = 32
+  special          = true
+  number           = true
+  upper            = true
+  lower            = true
+  override_special = "$-_%@#+="
+}
 
 # resource "azuread_application_password" "passwrd" {
 #   application_object_id = azuread_application.app.id
