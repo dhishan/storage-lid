@@ -97,33 +97,33 @@ resource "azurerm_key_vault_secret" "appservicesecret" {
 
 # App Registration
 
-# resource "azuread_application" "app" {
-#   display_name               = var.webapp_name
-#   homepage                   = format("https://%s.azurewebsites.net",var.webapp_name)
-#   identifier_uris            = [format("https://%s.azurewebsites.net",var.webapp_name)]
-#   reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback",var.webapp_name)]
-#   available_to_other_tenants = false
-#   oauth2_allow_implicit_flow = true
+resource "azuread_application" "app" {
+  display_name               = var.webapp_name
+  homepage                   = format("https://%s.azurewebsites.net",var.webapp_name)
+  identifier_uris            = [format("https://%s.azurewebsites.net",var.webapp_name)]
+  reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback",var.webapp_name)]
+  available_to_other_tenants = false
+  oauth2_allow_implicit_flow = true
 
-#   # required_resource_access {
-#   #   resource_app_id = "00000002-0000-0000-c000-000000000000"
+  # required_resource_access {
+  #   resource_app_id = "00000002-0000-0000-c000-000000000000"
 
-#   #   resource_access {
-#   #     id   = "..."
-#   #     type = "Scope"
-#   #   }
-#   # }
+  #   resource_access {
+  #     id   = "..."
+  #     type = "Scope"
+  #   }
+  # }
 
-#   oauth2_permissions {
-#     admin_consent_description  = "Allow the application to access website on behalf of the signed-in user."
-#     admin_consent_display_name = format("Allow %s",var.webapp_name)
-#     is_enabled                 = true
-#     type                       = "User"
-#     user_consent_description   = "Allow the application to access website on your behalf."
-#     user_consent_display_name  = format("Allow %s",var.webapp_name)
-#     value                      = "user_impersonation"
-#   }
-# }
+  oauth2_permissions {
+    admin_consent_description  = "Allow the application to access website on behalf of the signed-in user."
+    admin_consent_display_name = format("Allow %s",var.webapp_name)
+    is_enabled                 = true
+    type                       = "User"
+    user_consent_description   = "Allow the application to access website on your behalf."
+    user_consent_display_name  = format("Allow %s",var.webapp_name)
+    value                      = "user_impersonation"
+  }
+}
 resource "random_password" "password" {
   length           = 32
   special          = true
