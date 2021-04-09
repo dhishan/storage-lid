@@ -1,11 +1,11 @@
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "statefiles-store-rg"
-    storage_account_name = "statefilesstore"
-    container_name       = "storage-lid"
-    key                  = "infra.tfstate"
-  }
-}
+# terraform {
+#   backend "azurerm" {
+#     resource_group_name  = "statefiles-store-rg"
+#     storage_account_name = "statefilesstore"
+#     container_name       = "storage-lid"
+#     key                  = "infra.tfstate"
+#   }
+# }
 
 provider "azurerm" {
   features {}
