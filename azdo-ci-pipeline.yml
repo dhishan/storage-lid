@@ -72,15 +72,20 @@ jobs:
 
   - task: TerraformCLI@0
     inputs:
-      command: 'init'
+      command: init
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
-      environmentServiceName: 'SC1'
+      backendType: azurerm
+      backendServiceArm: SC1
+      backendAzureRmResourceGroupName: 'statefiles-store-rg'
+      backendAzureRmStorageAccountName: statefilesstore
+      backendAzureRmContainerName: 'storage-lid'
+      backendAzureRmKey: Infra.tfstate
 
   - task: TerraformCLI@0
     inputs:
       command: $(TERRAFORM_ACTION)
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
-      environmentServiceName: 'SC1'
+      environmentServiceName: SC1
       
   - task: "CmdLine@2"
     inputs:
