@@ -1,0 +1,101 @@
+name: "CI Pipeline"
+
+trigger:
+  branches:
+    include:
+    - main
+
+pool:
+  vmImage: "ubuntu-16.04"
+
+
+variables:
+- name: environment
+
+jobs:
+- job: tfSetup
+  steps:
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: 'latest'
+  # - task: CmdLine@2
+  #   inputs:
+  #     script: |
+  #       terraform version
+  #       ls -la
+  
+  - task: TerraformCLI@0
+    inputs:
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      backendType: 'azurerm'
+      backendServiceArm: 'SC1'
+      backendAzureRmResourceGroupName: 'statefiles-store-rg'
+      backendAzureRmStorageAccountName: 'statefilesstore'
+      backendAzureRmContainerName: 'storage-lid'
+      backendAzureRmKey: 'Infra.tfstate'
+  
+  - task: TerraformCLI@0
+    inputs:
+      command: 'validate'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+       
+  - task: TerraformCLI@0
+    inputs:
+      command: 'plan'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      environmentServiceName: 'SC1'
+      runAzLogin: true
+
+  # - task: ManualIntervention@8
+  #   inputs:
+  #     instructions: 'Please review before ${TERRAFORM_ACTION}'
+  #     emailRecipients: 'iamdhishan@gmail.com'
+  #     onTimeout: reject
+
+- job: waitForValidation
+  dependsOn: tfSetup
+  displayName: "Wait for validation"
+  pool: server
+  timeoutInMinutes: 4320 # job times out in 3 days
+  steps:   
+   - task: ManualValidation@0
+     timeoutInMinutes: 1440 # task times out in 1 day
+     inputs:
+         notifyUsers: |
+            iamdhishan@gmail.com
+         instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
+         onTimeout: reject
+
+- job: deploy
+  dependsOn: waitForValidation
+  pool:
+    vmImage: "ubuntu-16.04"
+  steps:
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: 'latest'
+  - task: TerraformCLI@0
+    inputs:
+      command: 'init'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      backendType: 'azurerm'
+      backendServiceArm: 'SC1'
+      backendAzureRmResourceGroupName: 'statefiles-store-rg'
+      backendAzureRmStorageAccountName: 'statefilesstore'
+      backendAzureRmContainerName: 'storage-lid'
+      backendAzureRmKey: 'infra.tfstate'
+      environmentServiceName: 'SC1'
+
+  - task: TerraformCLI@0
+    inputs:
+      command: $(TERRAFORM_ACTION)
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      environmentServiceName: 'SC1'
+      runAzLogin: true
+      
+  - task: "CmdLine@2"
+    inputs:
+      script: |
+        echo $(TERRAFORM_ACTION)
+
