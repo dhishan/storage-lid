@@ -12,3 +12,7 @@ variable "str_ip_rules" {
 variable "webapp_name" {
   default = "strreaderapp"
 }
+
+variable "application_object_id" {
+  type = string
+}
