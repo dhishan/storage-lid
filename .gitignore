@@ -9,6 +9,7 @@ workspace.*
 # .tfstate files
 *.tfstate
 *.tfstate.*
+*.terraform.*
 
 # Crash log files
 crash.log
