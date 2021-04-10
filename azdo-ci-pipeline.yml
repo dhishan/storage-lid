@@ -40,6 +40,7 @@ jobs:
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
       environmentServiceName: SC1
+      runAzLogin: true
 
   # - task: ManualIntervention@8
   #   inputs:
@@ -80,13 +81,15 @@ jobs:
       backendAzureRmStorageAccountName: statefilesstore
       backendAzureRmContainerName: 'storage-lid'
       backendAzureRmKey: Infra.tfstate
+      runAzLogin: true
 
   - task: TerraformCLI@0
     inputs:
       command: $(TERRAFORM_ACTION)
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
       environmentServiceName: SC1
-      
+      runAzLogin: true
+
   - task: "CmdLine@2"
     inputs:
       script: |
