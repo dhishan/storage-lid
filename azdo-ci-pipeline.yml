@@ -8,8 +8,14 @@ trigger:
 pool:
   vmImage: "ubuntu-16.04"
 
-variables:
-- name: environment
+parameters:
+- name: tfaction
+  displayName: Terraform Action
+  type: string
+  default: apply
+  values:
+  - destroy
+  - apply
 
 jobs:
 - job: tfSetup
@@ -29,7 +35,6 @@ jobs:
       backendAzureRmStorageAccountName: statefilesstore
       backendAzureRmContainerName: 'storage-lid'
       backendAzureRmKey: Infra.tfstate
-    
   
   - task: TerraformCLI@0
     inputs:
@@ -41,7 +46,12 @@ jobs:
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
       environmentServiceName: SC1
-      runAzLogin: true
+
+  - task: TerraformCLI@0
+    inputs:
+      command: ${{ parameters.tfaction }}
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      environmentServiceName: SC1
 
   # - task: ManualIntervention@8
   #   inputs:
@@ -49,50 +59,45 @@ jobs:
   #     emailRecipients: 'iamdhishan@gmail.com'
   #     onTimeout: reject
 
-- job: waitForValidation
-  dependsOn: tfSetup
-  displayName: "Wait for validation"
-  pool: server
-  timeoutInMinutes: 4320 # job times out in 3 days
-  steps:   
-   - task: ManualValidation@0
-     timeoutInMinutes: 1440 # task times out in 1 day
-     inputs:
-         notifyUsers: |
-            iamdhishan@gmail.com
-         instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
-         onTimeout: reject
+# - job: waitForValidation
+#   dependsOn: tfSetup
+#   displayName: "Wait for validation"
+#   pool: server
+#   timeoutInMinutes: 4320 # job times out in 3 days
+#   steps:   
+#    - task: ManualValidation@0
+#      timeoutInMinutes: 1440 # task times out in 1 day
+#      inputs:
+#          notifyUsers: |
+#             iamdhishan@gmail.com
+#          instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
+#          onTimeout: reject
 
-- job: deploy
-  dependsOn: waitForValidation
-  pool:
-    vmImage: "ubuntu-16.04"
-  steps:
-  - task: TerraformInstaller@0
-    inputs:
-      terraformVersion: 'latest'
+# - job: deploy
+#   dependsOn: waitForValidation
+#   pool:
+#     vmImage: "ubuntu-16.04"
+#   steps:
+#   - task: TerraformInstaller@0
+#     inputs:
+#       terraformVersion: 'latest'
 
-  - task: TerraformCLI@0
-    inputs:
-      command: init
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
-      backendType: azurerm
-      backendServiceArm: SC1
-      backendAzureRmResourceGroupName: 'statefiles-store-rg'
-      backendAzureRmStorageAccountName: statefilesstore
-      backendAzureRmContainerName: 'storage-lid'
-      backendAzureRmKey: Infra.tfstate
-      runAzLogin: true
+#   - task: TerraformCLI@0
+#     inputs:
+#       command: init
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+#       backendType: azurerm
+#       backendServiceArm: SC1
+#       backendAzureRmResourceGroupName: 'statefiles-store-rg'
+#       backendAzureRmStorageAccountName: statefilesstore
+#       backendAzureRmContainerName: 'storage-lid'
+#       backendAzureRmKey: Infra.tfstate
+#       runAzLogin: true
 
-  - task: TerraformCLI@0
-    inputs:
-      command: $(TERRAFORM_ACTION)
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
-      environmentServiceName: SC1
-      runAzLogin: true
-
-  - task: "CmdLine@2"
-    inputs:
-      script: |
-        echo $(TERRAFORM_ACTION)
+#   - task: TerraformCLI@0
+#     inputs:
+#       command: ${{ parameters.tfaction }}
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+#       environmentServiceName: SC1
+#       runAzLogin: true
 
