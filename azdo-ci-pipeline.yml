@@ -19,6 +19,7 @@ jobs:
       terraformVersion: 'latest'
 
   - task: TerraformCLI@0
+    displayName: Terraform Init
     inputs:
       command: init
       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
