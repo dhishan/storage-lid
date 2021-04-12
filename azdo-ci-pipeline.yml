@@ -16,6 +16,7 @@ parameters:
   values:
   - destroy
   - apply
+  - plan
 
 jobs:
 - job: tfSetup
