@@ -48,11 +48,11 @@ jobs:
       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
       environmentServiceName: SC1
 
-  - task: TerraformCLI@0
-    inputs:
-      command: ${{ parameters.tfaction }}
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-      environmentServiceName: SC1
+  # - task: TerraformCLI@0
+  #   inputs:
+  #     command: ${{ parameters.tfaction }}
+  #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+  #     environmentServiceName: SC1
 
   # - task: ManualIntervention@8
   #   inputs:
@@ -60,45 +60,45 @@ jobs:
   #     emailRecipients: 'iamdhishan@gmail.com'
   #     onTimeout: reject
 
-# - job: waitForValidation
-#   dependsOn: tfSetup
-#   displayName: "Wait for validation"
-#   pool: server
-#   timeoutInMinutes: 4320 # job times out in 3 days
-#   steps:   
-#    - task: ManualValidation@0
-#      timeoutInMinutes: 1440 # task times out in 1 day
-#      inputs:
-#          notifyUsers: |
-#             iamdhishan@gmail.com
-#          instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
-#          onTimeout: reject
+- job: waitForValidation
+  dependsOn: tfSetup
+  displayName: "Wait for validation"
+  pool: server
+  timeoutInMinutes: 4320 # job times out in 3 days
+  steps:   
+   - task: ManualValidation@0
+     timeoutInMinutes: 1440 # task times out in 1 day
+     inputs:
+         notifyUsers: |
+            iamdhishan@gmail.com
+         instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
+         onTimeout: reject
 
-# - job: deploy
-#   dependsOn: waitForValidation
-#   pool:
-#     vmImage: "ubuntu-16.04"
-#   steps:
-#   - task: TerraformInstaller@0
-#     inputs:
-#       terraformVersion: 'latest'
+- job: deploy
+  dependsOn: waitForValidation
+  pool:
+    vmImage: "ubuntu-16.04"
+  steps:
+  - task: TerraformInstaller@0
+    inputs:
+      terraformVersion: 'latest'
 
-#   - task: TerraformCLI@0
-#     inputs:
-#       command: init
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-#       backendType: azurerm
-#       backendServiceArm: SC1
-#       backendAzureRmResourceGroupName: 'statefiles-store-rg'
-#       backendAzureRmStorageAccountName: statefilesstore
-#       backendAzureRmContainerName: 'storage-lid'
-#       backendAzureRmKey: Infra.tfstate
-#       runAzLogin: true
-
-#   - task: TerraformCLI@0
-#     inputs:
-#       command: ${{ parameters.tfaction }}
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-#       environmentServiceName: SC1
-#       runAzLogin: true
+  - task: TerraformCLI@0
+    displayName: Terraform Init
+    inputs:
+      command: init
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+      backendType: azurerm
+      backendServiceArm: SC1
+      backendAzureRmResourceGroupName: 'statefiles-store-rg'
+      backendAzureRmStorageAccountName: statefilesstore
+      backendAzureRmContainerName: 'storage-lid'
+      backendAzureRmKey: App.tfstate
+  
+  - task: TerraformCLI@0
+    inputs:
+      command: ${{ parameters.tfaction }}
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+      environmentServiceName: SC1
+      runAzLogin: true
 
