@@ -12,7 +12,7 @@ parameters:
 - name: tfaction
   displayName: Terraform Action
   type: string
-  default: apply
+  default: plan
   values:
   - destroy
   - apply
@@ -28,7 +28,7 @@ jobs:
     displayName: Terraform Init
     inputs:
       command: init
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
       backendType: azurerm
       backendServiceArm: SC1
       backendAzureRmResourceGroupName: 'statefiles-store-rg'
@@ -39,18 +39,18 @@ jobs:
   - task: TerraformCLI@0
     inputs:
       command: 'validate'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
        
   - task: TerraformCLI@0
     inputs:
       command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
       environmentServiceName: SC1
 
   - task: TerraformCLI@0
     inputs:
       command: ${{ parameters.tfaction }}
-      workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
       environmentServiceName: SC1
 
   # - task: ManualIntervention@8
@@ -85,7 +85,7 @@ jobs:
 #   - task: TerraformCLI@0
 #     inputs:
 #       command: init
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
 #       backendType: azurerm
 #       backendServiceArm: SC1
 #       backendAzureRmResourceGroupName: 'statefiles-store-rg'
@@ -97,7 +97,7 @@ jobs:
 #   - task: TerraformCLI@0
 #     inputs:
 #       command: ${{ parameters.tfaction }}
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/Infra'
+#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
 #       environmentServiceName: SC1
 #       runAzLogin: true
 
