@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "statefiles-store-rg"
     storage_account_name = "statefilesstore"
     container_name       = "storage-lid"
-    key                  = "spn.tfstate"
+    key                  = "Infra.tfstate"
   }
 }
 
@@ -88,6 +88,11 @@ resource "azuread_application" "app" {
 }
 
 resource "azuread_application_password" "passwrd" {
+  lifecycle {
+    ignore_changes = [
+      end_date
+    ]
+  }
   application_object_id = azuread_application.app.object_id
   description           = "V1"
   value                 = random_password.password.result
