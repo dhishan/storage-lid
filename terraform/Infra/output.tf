@@ -17,3 +17,7 @@ output "kv_id" {
 output "rg_id" {
   value = azurerm_resource_group.rg.id
 }
+
+output "kv_secret_name" {
+  value = azurerm_key_vault_secret.appservicesecret.name
+}

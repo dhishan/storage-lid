@@ -1,6 +1,16 @@
 terraform {
-  backend "azurerm" {}
+  backend "azurerm" {
+    resource_group_name  = "statefiles-store-rg"
+    storage_account_name = "statefilesstore"
+    container_name       = "storage-lid"
+    key                  = "App.tfstate"
+  }
 }
+
+
+# terraform {
+#   backend "azurerm" {}
+# }
 
 provider "azurerm" {
   features {}
