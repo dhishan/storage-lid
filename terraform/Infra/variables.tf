@@ -11,5 +11,9 @@ variable "rg_location" {
 }
 
 variable "app_name" {
-  
+  type = string
 }
+
+# variable "spn_object_id" {
+#   type = string
+# }
