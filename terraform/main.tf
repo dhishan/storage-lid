@@ -161,11 +161,13 @@ resource "azurerm_app_service" "webapp" {
     unauthenticated_client_action = "RedirectToLoginPage"
 
     active_directory {
-      client_id = azuread_application.app.client_id
+      client_id = azuread_application.app.application_id
       client_secret = random_password.password.result
       # allowed_audiences = var.allowed_audiences
     }
   }
+
+  
   
 }
 
