@@ -155,12 +155,12 @@ resource "azurerm_app_service" "webapp" {
   }
 
   auth_settings {
-    # enabled = true
-    active_directory {
-      client_id = azuread_application.app.client_id
-      client_secret = random_password.password.result
-      # allowed_audiences = var.allowed_audiences
-    }
+    enabled = true
+    # active_directory {
+    #   client_id = azuread_application.app.client_id
+    #   client_secret = random_password.password.result
+    #   # allowed_audiences = var.allowed_audiences
+    # }
   }
   
 }
