@@ -28,14 +28,14 @@ jobs:
   - task: TerraformCLI@0
     displayName: Terraform Init
     inputs:
-      command: init
+      command: 'init'
       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-      backendType: azurerm
-      backendServiceArm: SC1
+      backendType: 'azurerm'
+      backendServiceArm: 'SC1'
       backendAzureRmResourceGroupName: 'statefiles-store-rg'
-      backendAzureRmStorageAccountName: statefilesstore
+      backendAzureRmStorageAccountName: 'statefilesstore'
       backendAzureRmContainerName: 'storage-lid'
-      backendAzureRmKey: terraform.tfstate
+      backendAzureRmKey: 'terraform.tfstate'
   
   - task: TerraformCLI@0
     inputs:
