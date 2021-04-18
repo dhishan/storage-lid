@@ -155,12 +155,16 @@ resource "azurerm_app_service" "webapp" {
   }
 
   auth_settings {
-    enabled = true
-    # active_directory {
-    #   client_id = azuread_application.app.client_id
-    #   client_secret = random_password.password.result
-    #   # allowed_audiences = var.allowed_audiences
-    # }
+    enabled                       = true
+    issuer                        = "https://sts.windows.net/d13958f6-b541-4dad-97b9-5a39c6b01297"
+    default_provider              = "AzureActiveDirectory"
+    unauthenticated_client_action = "RedirectToLoginPage"
+
+    active_directory {
+      client_id = azuread_application.app.client_id
+      client_secret = random_password.password.result
+      # allowed_audiences = var.allowed_audiences
+    }
   }
   
 }
