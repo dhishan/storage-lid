@@ -35,7 +35,7 @@ jobs:
       backendAzureRmResourceGroupName: 'statefiles-store-rg'
       backendAzureRmStorageAccountName: statefilesstore
       backendAzureRmContainerName: 'storage-lid'
-      backendAzureRmKey: App.tfstate
+      backendAzureRmKey: terraform.tfstate
   
   - task: TerraformCLI@0
     inputs:
