@@ -1,11 +1,11 @@
-# terraform {
-#   backend "azurerm" {
-#     resource_group_name  = "statefiles-store-rg"
-#     storage_account_name = "statefilesstore"
-#     container_name       = "storage-lid"
-#     key                  = "terraform.tfstate"
-#   }
-# }
+terraform {
+  backend "azurerm" {
+    # resource_group_name  = "statefiles-store-rg"
+    # storage_account_name = "statefilesstore"
+    # container_name       = "storage-lid"
+    # key                  = "terraform.tfstate"
+  }
+}
 
 provider "azurerm" {
   features {}
@@ -126,8 +126,8 @@ resource "azurerm_storage_account" "str" {
 
 resource "azurerm_app_service_plan" "appserviceplan" {
   name                = format("%s-plan", var.webapp_name)
-  location            = azurerm_resource_group.webapp.location
-  resource_group_name = azurerm_resource_group.webapp.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
 
   sku {
     tier = "Basic"
@@ -135,10 +135,10 @@ resource "azurerm_app_service_plan" "appserviceplan" {
   }
 }
 
-resource "azurerm_app_service" "strreaderapp" {
+resource "azurerm_app_service" "webapp" {
   name                = var.webapp_name
-  location            = azurerm_resource_group.webapp.location
-  resource_group_name = azurerm_resource_group.webapp.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
 
   site_config {
@@ -155,11 +155,11 @@ resource "azurerm_app_service" "strreaderapp" {
 
   auth_settings {
     enabled = true
-    active_directory {
-      client_id = var.app_client_id
-      client_secret = data.azurerm_key_vault_secret.kv_secret.value
-      allowed_audiences = var.allowed_audiences
-    }
+    # active_directory {
+    #   client_id = azuread_application.app.client_id
+    #   client_secret = random_password.password.result
+    #   # allowed_audiences = var.allowed_audiences
+    # }
   }
   
 }
