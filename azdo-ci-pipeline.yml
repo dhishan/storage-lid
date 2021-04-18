@@ -23,7 +23,7 @@ jobs:
   steps:
   - task: TerraformInstaller@0
     inputs:
-      terraformVersion: '14'
+      terraformVersion: 'v0.14.9'
 
   - task: TerraformCLI@0
     displayName: Terraform Init
