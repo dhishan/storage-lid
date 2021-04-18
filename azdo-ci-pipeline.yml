@@ -29,7 +29,7 @@ jobs:
     displayName: Terraform Init
     inputs:
       command: init
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       backendType: azurerm
       backendServiceArm: SC1
       backendAzureRmResourceGroupName: 'statefiles-store-rg'
@@ -40,18 +40,18 @@ jobs:
   - task: TerraformCLI@0
     inputs:
       command: 'validate'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
        
   - task: TerraformCLI@0
     inputs:
       command: 'plan'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       environmentServiceName: SC1
 
   - task: TerraformCLI@0
     inputs:
       command: ${{ parameters.tfaction }}
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       environmentServiceName: SC1
 
   # - task: ManualIntervention@8
