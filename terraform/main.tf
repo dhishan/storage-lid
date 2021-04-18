@@ -33,19 +33,19 @@ resource "azurerm_key_vault" "kv" {
   purge_protection_enabled    = false
 }
 
-resource "azurerm_key_vault_access_policy" "current_config" {
-  key_vault_id = azurerm_key_vault.kv.id
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = data.azurerm_client_config.current.object_id
+# resource "azurerm_key_vault_access_policy" "current_config" {
+#   key_vault_id = azurerm_key_vault.kv.id
+#   tenant_id    = data.azurerm_client_config.current.tenant_id
+#   object_id    = data.azurerm_client_config.current.object_id
 
-  secret_permissions = [
-      "set",
-      "get",
-      "delete",
-      "purge",
-      "recover"
-  ]
-}
+#   secret_permissions = [
+#       "set",
+#       "get",
+#       "delete",
+#       "purge",
+#       "recover"
+#   ]
+# }
 
 resource "azurerm_key_vault_secret" "appservicesecret" {
   name         = "spn-secret"
