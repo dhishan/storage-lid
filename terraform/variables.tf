@@ -10,22 +10,18 @@ variable "webapp_name" {
   default = "strreaderapp"
 }
 
-variable "application_object_id" {
-  type = string
-}
-
-variable "application_client_id" {
-  type = string
+variable "kv_name" {
+  default = "strreaderkv"
 }
 
 variable "rg_name" {
   type = string
 }
 
-variable "kv_name" {
+variable "rg_location" {
   type = string
 }
 
-variable "kv_secret_name" {
+variable "app_name" {
   type = string
 }

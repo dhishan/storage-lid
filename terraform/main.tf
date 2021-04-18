@@ -1,30 +1,28 @@
-terraform {
-  backend "azurerm" {
-    resource_group_name  = "statefiles-store-rg"
-    storage_account_name = "statefilesstore"
-    container_name       = "storage-lid"
-    key                  = "Infra.tfstate"
-  }
-}
-
-# App Registration
-# App Registration was not working with azdo service connection
-provider "azuread" {
-}
+# terraform {
+#   backend "azurerm" {
+#     resource_group_name  = "statefiles-store-rg"
+#     storage_account_name = "statefilesstore"
+#     container_name       = "storage-lid"
+#     key                  = "terraform.tfstate"
+#   }
+# }
 
 provider "azurerm" {
   features {}
 }
 
+provider "azuread" {
+}
+
 data "azurerm_client_config" "current" {
 }
+
 
 resource "azurerm_resource_group" "rg" {
   name     = var.rg_name
   location = var.rg_location
 }
 
-# Key Vault
 resource "azurerm_key_vault" "kv" {
   name                       = var.kv_name
   location                   = azurerm_resource_group.rg.location
@@ -48,20 +46,6 @@ resource "azurerm_key_vault_access_policy" "current_config" {
       "recover"
   ]
 }
-
-# resource "azurerm_key_vault_access_policy" "sc_spn" {
-#   key_vault_id = azurerm_key_vault.kv.id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = var.spn_object_id
-
-#   secret_permissions = [
-#       "set",
-#       "get",
-#       "delete",
-#       "purge",
-#       "recover"
-#   ]
-# }
 
 resource "azurerm_key_vault_secret" "appservicesecret" {
   name         = "spn-secret"
@@ -112,9 +96,74 @@ resource "azuread_application_password" "passwrd" {
       end_date
     ]
   }
+  depends_on = [
+    time_rotating.ninetydays
+  ]
+
   application_object_id = azuread_application.app.object_id
   description           = "V1"
   value                 = random_password.password.result
   end_date              = timeadd(timestamp(), "8760h") # one year
 }
 
+# Storage
+resource "azurerm_storage_account" "str" {
+  name                     = var.storageaccname
+  resource_group_name      = var.rg_name
+  location                 = var.rg_location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = var.str_ip_rules
+    # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
+  }
+}
+
+
+# App Service
+
+# resource "azurerm_app_service_plan" "appserviceplan" {
+#   name                = format("%s-plan", var.webapp_name)
+#   location            = azurerm_resource_group.webapp.location
+#   resource_group_name = azurerm_resource_group.webapp.name
+
+#   sku {
+#     tier = "Basic"
+#     size = "B1"
+#   }
+# }
+
+# resource "azurerm_app_service" "strreaderapp" {
+#   name                = var.webapp_name
+#   location            = azurerm_resource_group.webapp.location
+#   resource_group_name = azurerm_resource_group.webapp.name
+#   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
+
+#   site_config {
+#     linux_fx_version = "PYTHON|3.7"
+#   }
+
+#   app_settings = {
+#     "STORAGE_URI" = azurerm_storage_account.str.primary_blob_endpoint
+#   }
+
+#   identity {
+#     type = "SystemAssigned"
+#   }
+
+#   auth_settings {
+#     enabled = true
+#     active_directory {
+#       client_id = var.app_client_id
+#       client_secret = data.azurerm_key_vault_secret.kv_secret.value
+#       allowed_audiences = var.allowed_audiences
+#     }
+#   }
+  
+# }
+
+# Permission the App Service Idenity to access Storage Account
+# azurerm_app_service.strreaderapp.identity.0.principal_id
+# azurerm_app_service.example.identity.0.tenant_id
