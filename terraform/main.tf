@@ -31,6 +31,22 @@ resource "azurerm_key_vault" "kv" {
   sku_name                   = "standard"
   soft_delete_retention_days = 7
   purge_protection_enabled    = false
+
+  access_policy = [ {
+    application_id = data.azurerm_client_config.current.client_id
+    object_id    = data.azurerm_client_config.current.object_id
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    certificate_permissions = []
+    key_permissions = []
+    storage_permissions = []
+    secret_permissions = [
+      "set",
+      "get",
+      "delete",
+      "purge",
+      "recover"
+    ]
+  }]
 }
 
 # resource "azurerm_key_vault_access_policy" "current_config" {
@@ -156,9 +172,9 @@ resource "azurerm_app_service" "webapp" {
 
   auth_settings {
     enabled                       = true
-    issuer                        = "https://sts.windows.net/d13958f6-b541-4dad-97b9-5a39c6b01297"
-    default_provider              = "AzureActiveDirectory"
-    unauthenticated_client_action = "RedirectToLoginPage"
+    # issuer                        = "https://sts.windows.net/d13958f6-b541-4dad-97b9-5a39c6b01297"
+    # default_provider              = "AzureActiveDirectory"
+    # unauthenticated_client_action = "RedirectToLoginPage"
 
     active_directory {
       client_id = azuread_application.app.application_id
@@ -166,11 +182,13 @@ resource "azurerm_app_service" "webapp" {
       # allowed_audiences = var.allowed_audiences
     }
   }
-
-  
   
 }
 
 # Permission the App Service Idenity to access Storage Account
-# azurerm_app_service.strreaderapp.identity.0.principal_id
 # azurerm_app_service.example.identity.0.tenant_id
+resource "azurerm_role_assignment" "example" {
+  scope                = azurerm_app_service.webapp.id
+  role_definition_name = "Storage Blob Data Reader"
+  principal_id         = azurerm_app_service.webapp.identity.0.principal_id
+}
