@@ -47,11 +47,11 @@ jobs:
       command: 'plan'
       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       environmentServiceName: SC1
-  - task: ManualIntervention@8
-    inputs:
-      instructions: 'Please review before ${TERRAFORM_ACTION}'
-      emailRecipients: 'iamdhishan@gmail.com'
-      onTimeout: reject
+  # - task: ManualIntervention@8
+  #   inputs:
+  #     instructions: 'Please review before ${TERRAFORM_ACTION}'
+  #     emailRecipients: 'iamdhishan@gmail.com'
+  #     onTimeout: reject
   - task: TerraformCLI@0
     inputs:
       command: ${{ parameters.tfaction }}
