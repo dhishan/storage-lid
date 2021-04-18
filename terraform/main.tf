@@ -109,8 +109,8 @@ resource "azuread_application_password" "passwrd" {
 # Storage
 resource "azurerm_storage_account" "str" {
   name                     = var.storageaccname
-  resource_group_name      = var.rg_name
-  location                 = var.rg_location
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
@@ -124,45 +124,45 @@ resource "azurerm_storage_account" "str" {
 
 # App Service
 
-# resource "azurerm_app_service_plan" "appserviceplan" {
-#   name                = format("%s-plan", var.webapp_name)
-#   location            = azurerm_resource_group.webapp.location
-#   resource_group_name = azurerm_resource_group.webapp.name
+resource "azurerm_app_service_plan" "appserviceplan" {
+  name                = format("%s-plan", var.webapp_name)
+  location            = azurerm_resource_group.webapp.location
+  resource_group_name = azurerm_resource_group.webapp.name
 
-#   sku {
-#     tier = "Basic"
-#     size = "B1"
-#   }
-# }
+  sku {
+    tier = "Basic"
+    size = "B1"
+  }
+}
 
-# resource "azurerm_app_service" "strreaderapp" {
-#   name                = var.webapp_name
-#   location            = azurerm_resource_group.webapp.location
-#   resource_group_name = azurerm_resource_group.webapp.name
-#   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
+resource "azurerm_app_service" "strreaderapp" {
+  name                = var.webapp_name
+  location            = azurerm_resource_group.webapp.location
+  resource_group_name = azurerm_resource_group.webapp.name
+  app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
 
-#   site_config {
-#     linux_fx_version = "PYTHON|3.7"
-#   }
+  site_config {
+    linux_fx_version = "PYTHON|3.7"
+  }
 
-#   app_settings = {
-#     "STORAGE_URI" = azurerm_storage_account.str.primary_blob_endpoint
-#   }
+  app_settings = {
+    "STORAGE_URI" = azurerm_storage_account.str.primary_blob_endpoint
+  }
 
-#   identity {
-#     type = "SystemAssigned"
-#   }
+  identity {
+    type = "SystemAssigned"
+  }
 
-#   auth_settings {
-#     enabled = true
-#     active_directory {
-#       client_id = var.app_client_id
-#       client_secret = data.azurerm_key_vault_secret.kv_secret.value
-#       allowed_audiences = var.allowed_audiences
-#     }
-#   }
+  auth_settings {
+    enabled = true
+    active_directory {
+      client_id = var.app_client_id
+      client_secret = data.azurerm_key_vault_secret.kv_secret.value
+      allowed_audiences = var.allowed_audiences
+    }
+  }
   
-# }
+}
 
 # Permission the App Service Idenity to access Storage Account
 # azurerm_app_service.strreaderapp.identity.0.principal_id
