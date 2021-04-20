@@ -30,24 +30,24 @@ resource "azurerm_key_vault" "kv" {
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = "standard"
   soft_delete_retention_days = 7
-  purge_protection_enabled    = false
-
-  access_policy = [ {
-    application_id = data.azurerm_client_config.current.client_id
-    object_id    = data.azurerm_client_config.current.object_id
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    certificate_permissions = []
-    key_permissions = []
-    storage_permissions = []
-    secret_permissions = [
-      "set",
-      "get",
-      "delete",
-      "purge",
-      "recover",
-      "list"
-    ]
-  }]
+  purge_protection_enabled   = false
+  enable_rbac_authorization  = true
+  # access_policy = [ {
+  #   application_id = data.azurerm_client_config.current.client_id
+  #   object_id    = data.azurerm_client_config.current.object_id
+  #   tenant_id = data.azurerm_client_config.current.tenant_id
+  #   certificate_permissions = []
+  #   key_permissions = []
+  #   storage_permissions = []
+  #   secret_permissions = [
+  #     "set",
+  #     "get",
+  #     "delete",
+  #     "purge",
+  #     "recover",
+  #     "list"
+  #   ]
+  # }]
 }
 
 # resource "azurerm_key_vault_access_policy" "current_config" {
