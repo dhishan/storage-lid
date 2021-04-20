@@ -197,5 +197,5 @@ resource "azurerm_role_assignment" "str_read" {
 resource "azurerm_role_assignment" "kv_role" {
   scope                = azurerm_resource_group.rg.id
   role_definition_name = "Key Vault Administrator"
-  principal_id         = data.azurerm_client_config.current.client_id
+  principal_id         = data.azurerm_client_config.current.object_id
 }
