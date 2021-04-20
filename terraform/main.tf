@@ -188,8 +188,14 @@ resource "azurerm_app_service" "webapp" {
 
 # Permission the App Service Idenity to access Storage Account
 # azurerm_app_service.example.identity.0.tenant_id
-resource "azurerm_role_assignment" "example" {
+resource "azurerm_role_assignment" "str_read" {
   scope                = azurerm_app_service.webapp.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_app_service.webapp.identity.0.principal_id
+}
+
+resource "azurerm_role_assignment" "kv_role" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = data.azurerm_client_config.current.client_id
 }
