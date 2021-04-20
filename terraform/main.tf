@@ -65,6 +65,9 @@ resource "azurerm_key_vault" "kv" {
 # }
 
 resource "azurerm_key_vault_secret" "appservicesecret" {
+  depends_on = [
+    azurerm_role_assignment.kv_role
+  ]
   name         = "spn-secret"
   value        = random_password.password.result
   key_vault_id = azurerm_key_vault.kv.id
