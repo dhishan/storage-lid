@@ -68,6 +68,12 @@ resource "azurerm_key_vault" "kv" {
 #   ]
 # }
 
+resource "azurerm_role_assignment" "kv_role" {
+  scope                = azurerm_resource_group.rg.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
 resource "azurerm_key_vault_secret" "appservicesecret" {
   depends_on = [
     azurerm_role_assignment.kv_role
@@ -141,6 +147,7 @@ resource "azurerm_storage_account" "str" {
   network_rules {
     default_action             = "Deny"
     ip_rules                   = var.str_ip_rules
+    bypass = [ "Logging", "Metrics", "AzureServices" ]
     # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
   }
 }
@@ -196,15 +203,8 @@ resource "azurerm_app_service" "webapp" {
 }
 
 # Permission the App Service Idenity to access Storage Account
-# azurerm_app_service.example.identity.0.tenant_id
 resource "azurerm_role_assignment" "str_read" {
   scope                = azurerm_storage_account.str.id
   role_definition_name = "Storage Blob Data Reader"
   principal_id         = azurerm_app_service.webapp.identity.0.principal_id
-}
-
-resource "azurerm_role_assignment" "kv_role" {
-  scope                = azurerm_resource_group.rg.id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = data.azurerm_client_config.current.object_id
 }
