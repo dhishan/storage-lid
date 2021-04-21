@@ -19,7 +19,7 @@ parameters:
   - plan
 
 jobs:
-- job: infraPipelines
+- job: infraJob
   displayName: "Infra Job"
   steps:
   - task: TerraformInstaller@0
@@ -64,6 +64,7 @@ jobs:
       environmentServiceName: SC1
 
 - job: blobDataUpload
+  condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
   displayName: Upload sample data
   steps:
     - task: AzureCLI@2
