@@ -19,7 +19,7 @@ parameters:
   - plan
 
 jobs:
-- job: infraPipelines
+- job: infraJob
   displayName: "Infra Job"
   steps:
   - task: TerraformInstaller@0
@@ -60,19 +60,30 @@ jobs:
     displayName: Terraform Apply
     inputs:
       command: ${{ parameters.tfaction }}
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      workingDirectory: 'terraform'
       environmentServiceName: SC1
 
 - job: blobDataUpload
+  condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
   displayName: Upload sample data
   steps:
-    - task: AzureCLI@2
+    - task: AzureFileCopy@4
       inputs:
+        SourcePath: '$(System.DefaultWorkingDirectory)/sampledata/org'
         azureSubscription: 'SC1'
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: 'az storage container create --resource-group "storage-lid-rg" --name "org" --account-name "orguserdatastore"'
-        workingDirectory: 'sampledata'
+        Destination: 'AzureBlob'
+        storage: 'orguserdatastore'
+        ContainerName: 'org'
+        AdditionalArgumentsForBlobCopy: '--recursive'
+        
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(System.DefaultWorkingDirectory)/sampledata/users'
+        azureSubscription: 'SC1'
+        Destination: 'AzureBlob'
+        storage: 'orguserdatastore'
+        ContainerName: 'users'
+        AdditionalArgumentsForBlobCopy: '--recursive'
 
 # - job: waitForValidation
 #   dependsOn: tfSetup
