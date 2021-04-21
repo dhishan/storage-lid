@@ -22,6 +22,7 @@ jobs:
 - job: tfSetup
   steps:
   - task: TerraformInstaller@0
+    displayName: Install Terraform
     inputs:
       terraformVersion: 'v0.14.9'
 

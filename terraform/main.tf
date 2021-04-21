@@ -8,7 +8,11 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 }
 
 provider "azuread" {
@@ -176,14 +180,16 @@ resource "azurerm_app_service" "webapp" {
 
   auth_settings {
     enabled                       = true
-    # issuer                        = "https://sts.windows.net/d13958f6-b541-4dad-97b9-5a39c6b01297"
+    issuer                        = "https://sts.windows.net/94a8b28b-7de6-4eba-af01-5dfd2c03c072"
     # default_provider              = "AzureActiveDirectory"
     # unauthenticated_client_action = "RedirectToLoginPage"
 
     active_directory {
       client_id = azuread_application.app.application_id
       client_secret = random_password.password.result
-      # allowed_audiences = var.allowed_audiences
+      allowed_audiences = [
+        format("https://%s.azurewebsites.net", var.webapp_name)
+      ]
     }
   }
   
