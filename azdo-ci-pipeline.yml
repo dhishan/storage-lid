@@ -72,7 +72,7 @@ jobs:
         azureSubscription: 'SC1'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
-        inlineScript: 'az storage container create --resource-group "storage-lid-rg" --name "org" --account-name "orguserdatastore"'
+        inlineScript: 'az storage container create --resource-group "storage-lid-rg" --name "org" --account-name "orguserdatastore" --auth-mode login '
         workingDirectory: 'sampledata'
 
 # - job: waitForValidation
