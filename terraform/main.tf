@@ -152,7 +152,17 @@ resource "azurerm_storage_account" "str" {
   }
 }
 
+resource "azurerm_storage_container" "users" {
+  name                  = "users"
+  storage_account_name  = azurerm_storage_account.str.name
+  container_access_type = "private"
+}
 
+resource "azurerm_storage_container" "org" {
+  name                  = "org"
+  storage_account_name  = azurerm_storage_account.str.name
+  container_access_type = "private"
+}
 # App Service
 
 resource "azurerm_app_service_plan" "appserviceplan" {
