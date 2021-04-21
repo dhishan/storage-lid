@@ -63,7 +63,16 @@ jobs:
       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       environmentServiceName: SC1
 
-  
+- job: blobDataUpload
+  displayName: Upload sample data
+  steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'SC1'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az storage container create --resource-group "storage-lid-rg" --name "org" --account-name "orguserdatastore"'
+        workingDirectory: 'sampledata'
 
 # - job: waitForValidation
 #   dependsOn: tfSetup
