@@ -36,22 +36,6 @@ resource "azurerm_key_vault" "kv" {
   soft_delete_retention_days = 7
   purge_protection_enabled   = false
   enable_rbac_authorization  = true
-  # access_policy = [ {
-  #   application_id = data.azurerm_client_config.current.client_id
-  #   object_id    = data.azurerm_client_config.current.object_id
-  #   tenant_id = data.azurerm_client_config.current.tenant_id
-  #   certificate_permissions = []
-  #   key_permissions = []
-  #   storage_permissions = []
-  #   secret_permissions = [
-  #     "set",
-  #     "get",
-  #     "delete",
-  #     "purge",
-  #     "recover",
-  #     "list"
-  #   ]
-  # }]
 }
 
 # resource "azurerm_key_vault_access_policy" "current_config" {
@@ -144,25 +128,25 @@ resource "azurerm_storage_account" "str" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  network_rules {
-    default_action             = "Deny"
-    ip_rules                   = var.str_ip_rules
-    bypass = [ "Logging", "Metrics", "AzureServices" ]
-    # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
-  }
+  # network_rules {
+  #   default_action             = "Deny"
+  #   ip_rules                   = var.str_ip_rules
+  #   bypass = [ "Logging", "Metrics", "AzureServices" ]
+  #   # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
+  # }
 }
 
-resource "azurerm_storage_container" "users" {
-  name                  = "users"
-  storage_account_name  = azurerm_storage_account.str.name
-  container_access_type = "private"
-}
+# resource "azurerm_storage_container" "users" {
+#   name                  = "users"
+#   storage_account_name  = azurerm_storage_account.str.name
+#   container_access_type = "private"
+# }
 
-resource "azurerm_storage_container" "org" {
-  name                  = "org"
-  storage_account_name  = azurerm_storage_account.str.name
-  container_access_type = "private"
-}
+# resource "azurerm_storage_container" "org" {
+#   name                  = "org"
+#   storage_account_name  = azurerm_storage_account.str.name
+#   container_access_type = "private"
+# }
 # App Service
 
 resource "azurerm_app_service_plan" "appserviceplan" {
