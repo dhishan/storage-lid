@@ -5,8 +5,8 @@ trigger:
     include:
     - main
 
-pool:
-  vmImage: "ubuntu-latest"
+# pool:
+#   vmImage: "ubuntu-latest"
 
 parameters:
 - name: tfaction
@@ -65,7 +65,7 @@ jobs:
 
 - job: blobDataUpload
   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
-  pool: 'windows-latest'
+  # pool: 'windows-latest'
   displayName: Upload sample data
   steps:
     - task: AzureFileCopy@4
