@@ -71,28 +71,23 @@ stages:
   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
   jobs:
   - job: blobDataUpload
-    pool: 'windows-latest'
     displayName: Upload sample data
     steps:
-      - task: AzureFileCopy@4
+      - task: AzureCLI@2
         inputs:
-          SourcePath: '$(System.DefaultWorkingDirectory)/sampledata/org'
           azureSubscription: 'SC1'
-          Destination: 'AzureBlob'
-          storage: 'orguserdatastore'
-          ContainerName: 'org'
-          AdditionalArgumentsForBlobCopy: '--recursive'
-          
-      - task: AzureFileCopy@4
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az storage blob sync -c 'org' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
+      
+      - task: AzureCLI@2
         inputs:
-          SourcePath: '$(System.DefaultWorkingDirectory)/sampledata/users'
           azureSubscription: 'SC1'
-          Destination: 'AzureBlob'
-          storage: 'orguserdatastore'
-          ContainerName: 'users'
-          AdditionalArgumentsForBlobCopy: '--recursive'
-
-
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az storage blob sync -c 'users' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
 
 
 # - job: waitForValidation
