@@ -5,8 +5,8 @@ trigger:
     include:
     - main
 
-pool:
-  vmImage: "ubuntu-latest"
+# pool:
+#   vmImage: "ubuntu-latest"
 
 parameters:
 - name: tfaction
