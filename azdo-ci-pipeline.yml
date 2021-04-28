@@ -79,7 +79,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            'az storage blob sync -c 'org' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
+            az storage blob sync -c 'org' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
       
       - task: AzureCLI@2
         inputs:
@@ -87,7 +87,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            'az storage blob sync -c 'users' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
+            az storage blob sync -c 'users' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
 
 
 # - job: waitForValidation
