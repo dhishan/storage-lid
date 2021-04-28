@@ -19,11 +19,11 @@ parameters:
   - plan
 
 stages:
-- stage: Infra
-  displayName: Terraform Infra
+- stage: Terraform
+  displayName: Terraform
   jobs:
-  - job: infraJob
-    displayName: "Infra Job"
+  - job: terraformJob
+    displayName: "Terraform Job"
     steps:
     - task: TerraformInstaller@0
       displayName: Install Terraform
