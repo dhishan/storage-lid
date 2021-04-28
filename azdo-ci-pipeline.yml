@@ -71,7 +71,7 @@ stages:
   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
   jobs:
   - job: blobDataUpload
-    pool: 'windows-latest'
+    pool: 'windows-2019'
     displayName: Upload sample data
     steps:
       - task: AzureFileCopy@4
