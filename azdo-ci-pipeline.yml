@@ -18,6 +18,19 @@ parameters:
   - apply
   - plan
 
+variables:
+  # Terraform Variables
+  webAppName: 'storage-lid'
+  storageAccName: 'orguserdatastore'
+  rgName: 'rg_name'
+  # Agent VM image name
+  # Environment name
+  environmentName: 'dev'
+  # Project root folder. Point to the folder containing manage.py file.
+  projectRoot: $(System.DefaultWorkingDirectory)
+  # Python version: 3.7
+  pythonVersion: '3.7'
+
 stages:
 - stage: Terraform
   displayName: Terraform
@@ -54,6 +67,7 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: SC1
+        commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="storageaccname$(rgName)"'
     # - task: ManualIntervention@8
     #   inputs:
     #     instructions: 'Please review before ${TERRAFORM_ACTION}'
@@ -65,6 +79,7 @@ stages:
         command: ${{ parameters.tfaction }}
         workingDirectory: 'terraform'
         environmentServiceName: SC1
+        commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="storageaccname$(rgName)"'
 
 - stage: blobDataUpload
   displayName: "Data Upload"
@@ -74,6 +89,7 @@ stages:
     displayName: Upload sample data
     steps:
       - task: AzureCLI@2
+        displayName: "Org Sample Data Copy"
         inputs:
           azureSubscription: 'SC1'
           scriptType: 'bash'
@@ -82,6 +98,7 @@ stages:
             az storage blob sync -c 'org' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
       
       - task: AzureCLI@2
+        displayName: "Users Sample Data Copy"
         inputs:
           azureSubscription: 'SC1'
           scriptType: 'bash'
@@ -89,7 +106,62 @@ stages:
           inlineScript: |
             az storage blob sync -c 'users' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
 
+- stage: Build
+  displayName: Build stage
+  condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
+  jobs:
+  - job: BuildJob
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(pythonVersion)'
+      displayName: 'Use Python $(pythonVersion)'
 
+    - script: |
+        python -m venv antenv
+        source antenv/bin/activate
+        python -m pip install --upgrade pip
+        pip install setup
+        pip install -r requirements.txt
+      workingDirectory: $(projectRoot)/App
+      displayName: "Install requirements"
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(projectRoot)/App'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      displayName: 'Upload package'
+      artifact: drop
+
+- stage: Deploy
+  displayName: 'Deploy Web App'
+  dependsOn: Build
+  condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
+  jobs:
+  - deployment: DeploymentJob
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+            displayName: 'Use Python version'
+
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App : $(webAppName)'
+            inputs:
+              azureSubscription: 'SC1'
+              appName: $(webAppName)
+              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 # - job: waitForValidation
 #   dependsOn: tfSetup
 #   displayName: "Wait for validation"
