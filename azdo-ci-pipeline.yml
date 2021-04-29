@@ -22,7 +22,7 @@ variables:
   # Terraform Variables
   webAppName: 'storage-lid'
   storageAccName: 'orguserdatastore'
-  rgName: 'rg_name'
+  rgName: 'storage-lid-rg'
   # Agent VM image name
   # Environment name
   environmentName: 'dev'
