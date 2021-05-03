@@ -29,7 +29,7 @@ variables:
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
   # Python version: 3.7
-  pythonVersion: '3.5'
+  pythonVersion: '3.7'
 
 stages:
 - stage: Terraform

@@ -9,30 +9,34 @@ products:
 - azure-app-service
 ---
 
-# Deploying Webapp manually
+# storage-lid
 
-1. Create a webapp in the portal
-1. az login
-1. Create a deployment url
-```bash
-az webapp deployment source config-local-git --name storageaccessdhishan --resource-group webapp-storage-ui-rg
-```
-1. Upload the local folder to webapp
-```bash
+An end to end automation to demonstrate access of storage account through a REST based web app with native Azure AD integration. 
 
-```
-This is a minimal Flask app that can be deployed to Azure App Service on Linux.
+## Azure Devops Setup
 
-For instructions on running and deploying the code, see [Quickstart: Create a Python app in Azure App Service on Linux](https://docs.microsoft.com/azure/app-service/quickstart-python).
+1. A service principal with permissions to create 
+    1. Azure AD Application ( old windows azure api applications.write.ownedby permissions )
+    2. Owner at the subscription Level
 
+
+# Insights
 ## Rotating Credentials for SPN automatically using terraform
+TBD
+## SPN permissions for app creation using using terraform
+TBD
+## Python APP using terraform and msft hosted build agents
+TBD
 
-## Ref:
+## Whitelisting Storage account for build and updating ip address
+TBD
+
+## References:
+1. Adding an IP to whitelist for build time in Azure Devops
 ```bash
 curl -s http://ipinfo.io/json | jq '.ip'
 # https://stackoverflow.com/questions/53422395/how-to-get-the-ip-address-for-azure-devops-hosted-agents-to-add-to-the-white-lis
 ```
 
-## Contributing
+2. For instructions on running and deploying the code, see [Quickstart: Create a Python app in Azure App Service on Linux](https://docs.microsoft.com/azure/app-service/quickstart-python).
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
