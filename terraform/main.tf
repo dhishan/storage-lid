@@ -83,19 +83,19 @@ resource "random_password" "password" {
 
 resource "azuread_application" "app" {
   display_name               = var.app_name
-  homepage                   = format("https://%s.azurewebsites.net",var.app_name)
-  identifier_uris            = [format("https://%s.azurewebsites.net",var.app_name)]
-  reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback",var.app_name)]
+  homepage                   = format("https://%s.azurewebsites.net", var.app_name)
+  identifier_uris            = [format("https://%s.azurewebsites.net", var.app_name)]
+  reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback", var.app_name)]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
 
   oauth2_permissions {
     admin_consent_description  = "Allow the application to access website on behalf of the signed-in user."
-    admin_consent_display_name = format("Allow %s",var.app_name)
+    admin_consent_display_name = format("Allow %s", var.app_name)
     is_enabled                 = true
     type                       = "User"
     user_consent_description   = "Allow the application to access website on your behalf."
-    user_consent_display_name  = format("Allow %s",var.app_name)
+    user_consent_display_name  = format("Allow %s", var.app_name)
     value                      = "user_impersonation"
   }
 
@@ -106,8 +106,6 @@ resource "azuread_application" "app" {
       id   = "311a71cc-e848-46a1-bdf8-97ff7156d8e6"
       type = "Scope"
     }
-  }
-    
   }
 }
 
@@ -206,20 +204,20 @@ resource "azurerm_app_service" "webapp" {
   }
 
   auth_settings {
-    enabled                       = true
-    issuer                        = "https://sts.windows.net/94a8b28b-7de6-4eba-af01-5dfd2c03c072"
+    enabled = true
+    issuer  = "https://sts.windows.net/94a8b28b-7de6-4eba-af01-5dfd2c03c072"
     # default_provider              = "AzureActiveDirectory"
     # unauthenticated_client_action = "RedirectToLoginPage"
 
     active_directory {
-      client_id = azuread_application.app.application_id
+      client_id     = azuread_application.app.application_id
       client_secret = random_password.password.result
       allowed_audiences = [
         format("https://%s.azurewebsites.net", var.webapp_name)
       ]
     }
   }
-  
+
 }
 
 # Permission the App Service Idenity to access Storage Account

@@ -5,5 +5,5 @@ variable "rg_name" {}
 variable "rg_location" {}
 variable "app_name" {}
 variable "str_ip_rules" {
-    type = list(string)
+  type = list(string)
 }
