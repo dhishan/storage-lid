@@ -38,20 +38,6 @@ resource "azurerm_key_vault" "kv" {
   enable_rbac_authorization  = true
 }
 
-# resource "azurerm_key_vault_access_policy" "current_config" {
-#   key_vault_id = azurerm_key_vault.kv.id
-#   tenant_id    = data.azurerm_client_config.current.tenant_id
-#   object_id    = data.azurerm_client_config.current.object_id
-
-#   secret_permissions = [
-#       "set",
-#       "get",
-#       "delete",
-#       "purge",
-#       "recover"
-#   ]
-# }
-
 resource "azurerm_role_assignment" "kv_role" {
   scope                = azurerm_resource_group.rg.id
   role_definition_name = "Key Vault Administrator"
@@ -177,6 +163,7 @@ resource "azurerm_app_service_plan" "appserviceplan" {
   name                = format("%s-plan", var.webapp_name)
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  kind = "Linux"
 
   sku {
     tier = "Basic"
@@ -191,8 +178,8 @@ resource "azurerm_app_service" "webapp" {
   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
 
   site_config {
-    # linux_fx_version = "PYTHON|3.7"
-    python_version = "3.4"
+    linux_fx_version = "PYTHON|3.7"
+    # python_version = "3.4"
   }
 
   app_settings = {
