@@ -98,6 +98,17 @@ resource "azuread_application" "app" {
     user_consent_display_name  = format("Allow %s",var.app_name)
     value                      = "user_impersonation"
   }
+
+  required_resource_access {
+    resource_app_id = "00000002-0000-0000-c000-000000000000"
+
+    resource_access {
+      id   = "311a71cc-e848-46a1-bdf8-97ff7156d8e6"
+      type = "Scope"
+    }
+  }
+    
+  }
 }
 
 resource "time_rotating" "ninetydays" {
@@ -147,6 +158,21 @@ resource "azurerm_storage_container" "org" {
   storage_account_name  = azurerm_storage_account.str.name
   container_access_type = "private"
 }
+
+# resource "azurerm_storage_account" "strlogs" {
+#   name                     = format("%slogs",var.webapp_name)
+#   resource_group_name      = azurerm_resource_group.rg.name
+#   location                 = azurerm_resource_group.rg.location
+#   account_tier             = "Standard"
+#   account_replication_type = "LRS"
+
+#   network_rules {
+#     default_action             = "Deny"
+#     bypass = [ "Logging", "Metrics", "AzureServices" ]
+#     # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
+#   }
+# }
+
 # App Service
 
 resource "azurerm_app_service_plan" "appserviceplan" {
