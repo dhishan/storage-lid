@@ -9,9 +9,14 @@ products:
 - azure-app-service
 ---
 
-# storage-lid
+# A python App running on Azure App Service to Access Storge Account using REST API with Azure AD IDP
 
 An end to end automation to demonstrate access of storage account through a REST based web app with native Azure AD integration. 
+
+## Why?
+
+
+## How do I run it in my tenant
 
 ## Azure Devops Setup
 
