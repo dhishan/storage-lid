@@ -1,9 +1,7 @@
 name: "CD Pipeline"
 
 trigger:
-  branches:
-    include:
-    - secure
+- secure
 
 pool:
   vmImage: "ubuntu-latest"
