@@ -31,13 +31,6 @@ stages:
   - job: terraformPlan
     displayName: "Terraform Plan"
     steps:
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: |
-          # Write your commands here
-          
-          echo $TF_VAR_RG_NAME
     - task: TerraformInstaller@0
       displayName: Install Terraform
       inputs:
@@ -70,6 +63,7 @@ stages:
 
   - deployment: terraformApply
     displayName: "Terraform Apply"
+    dependsOn: terraformPlan
     condition: and(succeeded(), ne('${{ parameters.tfaction }}', 'plan'))
     environment: $(environmentName)
     strategy:
@@ -98,7 +92,7 @@ stages:
             inputs:
               command: ${{ parameters.tfaction }}
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-              environmentServiceName: SC1
+              environmentServiceName: 'SC1'
               # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
 - stage: blobDataUpload
