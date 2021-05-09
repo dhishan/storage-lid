@@ -62,7 +62,7 @@ stages:
         backendAzureRmResourceGroupName: 'statefiles-store-rg'
         backendAzureRmStorageAccountName: 'statefilesstore'
         backendAzureRmContainerName: 'storage-lid'
-        backendAzureRmKey: 'terraform.tfstate'
+        backendAzureRmKey: 'terraform-secure.tfstate'
     
     - task: TerraformCLI@0
       displayName: Terraform Validate
