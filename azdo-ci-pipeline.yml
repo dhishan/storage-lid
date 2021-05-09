@@ -4,6 +4,8 @@ trigger:
   branches:
     include:
     - main
+    exclude:
+    - secure
 
 pool:
   vmImage: "ubuntu-latest"
