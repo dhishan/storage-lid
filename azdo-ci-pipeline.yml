@@ -1,8 +1,5 @@
 name: "CD Pipeline"
 
-trigger:
-- secure
-
 pool:
   vmImage: "ubuntu-latest"
 
@@ -18,14 +15,6 @@ parameters:
   
 variables:
   - group: tfvars
-  # - name: webAppName
-  #   value: 'storage-lid-pe'
-  # - name: storageAccName
-  #   value: 'orguserdatastorepe'
-  # - name: rgName
-  #   value: 'storage-lid-pe-rg'
-  # - name: environmentName
-  #   value: 'dev'
   - name: projectRoot
     value: $(System.DefaultWorkingDirectory)
   - name: pythonVersion
@@ -74,23 +63,32 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: SC1
-        # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
-    # - task: ManualIntervention@8
-    #   inputs:
-    #     instructions: 'Please review before ${TERRAFORM_ACTION}'
-    #     emailRecipients: 'iamdhishan@gmail.com'
-    #     onTimeout: reject
-  - job: terraformApply
+
+  - deployment: terraformApply
     displayName: "Terraform Apply"
     condition: and(succeeded(), ne('${{ parameters.tfaction }}', 'plan'))
-    steps:
-    - task: TerraformCLI@0
-      displayName: Terraform Apply
-      inputs:
-        command: ${{ parameters.tfaction }}
-        workingDirectory: 'terraform'
-        environmentServiceName: SC1
-        # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: TerraformCLI@0
+            displayName: Terraform Init
+            inputs:
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              backendType: 'azurerm'
+              backendServiceArm: 'SC1'
+              backendAzureRmResourceGroupName: 'statefiles-store-rg'
+              backendAzureRmStorageAccountName: 'statefilesstore'
+              backendAzureRmContainerName: 'storage-lid'
+              backendAzureRmKey: 'terraform-secure.tfstate'
+          - task: TerraformCLI@0
+            displayName: Terraform Apply
+            inputs:
+              command: ${{ parameters.tfaction }}
+              workingDirectory: 'terraform'
+              environmentServiceName: SC1
+              # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
 - stage: blobDataUpload
   displayName: "Data Upload"
