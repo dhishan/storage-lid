@@ -21,6 +21,8 @@ variables:
     value: '3.7'
   - name: environmentName
     value: 'Dev'
+  - name: tfversion
+    value: 'v0.14.9'
 
 stages:
 - stage: Terraform
@@ -39,7 +41,7 @@ stages:
     - task: TerraformInstaller@0
       displayName: Install Terraform
       inputs:
-        terraformVersion: 'v0.14.9'
+        terraformVersion: $(tfversion)
 
     - task: TerraformCLI@0
       displayName: Terraform Init
@@ -74,6 +76,10 @@ stages:
       runOnce:
         deploy:
           steps:
+          - task: TerraformInstaller@0
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: $(tfversion)
           - task: TerraformCLI@0
             displayName: Terraform Init
             inputs:
@@ -169,9 +175,9 @@ stages:
             displayName: 'Use Python version'
 
           - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App : $(webAppName)'
+            displayName: 'Deploy Azure Web App : $(TF_VAR_WEB_APP_NAME)'
             inputs:
               azureSubscription: 'SC1'
-              appName: $(webAppName)
+              appName: $(TF_VAR_WEB_APP_NAME)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
 
