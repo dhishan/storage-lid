@@ -19,6 +19,8 @@ variables:
     value: $(System.DefaultWorkingDirectory)
   - name: pythonVersion
     value: '3.7'
+  - name: environmentName
+    value: 'Dev'
 
 stages:
 - stage: Terraform
@@ -67,6 +69,7 @@ stages:
   - deployment: terraformApply
     displayName: "Terraform Apply"
     condition: and(succeeded(), ne('${{ parameters.tfaction }}', 'plan'))
+    environment: $(environmentName)
     strategy:
       runOnce:
         deploy:
