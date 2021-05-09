@@ -20,14 +20,14 @@ parameters:
   
 variables:
   - group: tfvars
-  - name: webAppName
-    value: 'storage-lid-pe'
-  - name: storageAccName
-    value: 'orguserdatastorepe'
-  - name: rgName
-    value: 'storage-lid-pe-rg'
-  - name: environmentName
-    value: 'dev'
+  # - name: webAppName
+  #   value: 'storage-lid-pe'
+  # - name: storageAccName
+  #   value: 'orguserdatastorepe'
+  # - name: rgName
+  #   value: 'storage-lid-pe-rg'
+  # - name: environmentName
+  #   value: 'dev'
   - name: projectRoot
     value: $(System.DefaultWorkingDirectory)
   - name: pythonVersion
@@ -37,8 +37,8 @@ stages:
 - stage: Terraform
   displayName: Terraform
   jobs:
-  - job: terraformJob
-    displayName: "Terraform Job"
+  - job: terraformPlan
+    displayName: "Terraform Plan"
     steps:
     - task: Bash@3
       inputs:
@@ -46,7 +46,7 @@ stages:
         script: |
           # Write your commands here
           
-          echo $RG_NAME
+          echo $TF_VAR_RG_NAME
     - task: TerraformInstaller@0
       displayName: Install Terraform
       inputs:
@@ -82,6 +82,10 @@ stages:
     #     instructions: 'Please review before ${TERRAFORM_ACTION}'
     #     emailRecipients: 'iamdhishan@gmail.com'
     #     onTimeout: reject
+  - job: terraformApply
+    displayName: "Terraform Apply"
+    condition: and(succeeded(), ne('${{ parameters.tfaction }}', 'plan'))
+    steps:
     - task: TerraformCLI@0
       displayName: Terraform Apply
       inputs:
