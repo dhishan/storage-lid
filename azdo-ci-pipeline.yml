@@ -17,19 +17,21 @@ parameters:
   - destroy
   - apply
   - plan
-
+  
 variables:
-  # Terraform Variables
-  webAppName: 'storage-lid'
-  storageAccName: 'orguserdatastore'
-  rgName: 'storage-lid-rg'
-  # Agent VM image name
-  # Environment name
-  environmentName: 'dev'
-  # Project root folder. Point to the folder containing manage.py file.
-  projectRoot: $(System.DefaultWorkingDirectory)
-  # Python version: 3.7
-  pythonVersion: '3.7'
+  - group: tfvars
+  - name: webAppName
+    value: 'storage-lid-pe'
+  - name: storageAccName
+    value: 'orguserdatastorepe'
+  - name: rgName
+    value: 'storage-lid-pe-rg'
+  - name: environmentName
+    value: 'dev'
+  - name: projectRoot
+    value: $(System.DefaultWorkingDirectory)
+  - name: pythonVersion
+    value: '3.7'
 
 stages:
 - stage: Terraform
@@ -162,45 +164,4 @@ stages:
               azureSubscription: 'SC1'
               appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-# - job: waitForValidation
-#   dependsOn: tfSetup
-#   displayName: "Wait for validation"
-#   pool: server
-#   timeoutInMinutes: 4320 # job times out in 3 days
-#   steps:   
-#    - task: ManualValidation@0
-#      timeoutInMinutes: 1440 # task times out in 1 day
-#      inputs:
-#          notifyUsers: |
-#             iamdhishan@gmail.com
-#          instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
-#          onTimeout: reject
-
-# - job: deploy
-#   dependsOn: waitForValidation
-#   pool:
-#     vmImage: "ubuntu-16.04"
-#   steps:
-#   - task: TerraformInstaller@0
-#     inputs:
-#       terraformVersion: 'latest'
-
-#   - task: TerraformCLI@0
-#     displayName: Terraform Init
-#     inputs:
-#       command: init
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-#       backendType: azurerm
-#       backendServiceArm: SC1
-#       backendAzureRmResourceGroupName: 'statefiles-store-rg'
-#       backendAzureRmStorageAccountName: statefilesstore
-#       backendAzureRmContainerName: 'storage-lid'
-#       backendAzureRmKey: App.tfstate
-  
-#   - task: TerraformCLI@0
-#     inputs:
-#       command: ${{ parameters.tfaction }}
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-#       environmentServiceName: SC1
-#       runAzLogin: true
 
