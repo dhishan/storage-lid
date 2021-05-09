@@ -80,6 +80,7 @@ stages:
             displayName: Install Terraform
             inputs:
               terraformVersion: $(tfversion)
+
           - task: TerraformCLI@0
             displayName: Terraform Init
             inputs:
@@ -91,11 +92,12 @@ stages:
               backendAzureRmStorageAccountName: 'statefilesstore'
               backendAzureRmContainerName: 'storage-lid'
               backendAzureRmKey: 'terraform-secure.tfstate'
+
           - task: TerraformCLI@0
             displayName: Terraform Apply
             inputs:
               command: ${{ parameters.tfaction }}
-              workingDirectory: 'terraform'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceName: SC1
               # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
