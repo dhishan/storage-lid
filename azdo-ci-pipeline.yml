@@ -110,7 +110,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az storage blob sync -c 'org' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
+            az storage blob sync -c 'org' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
       
       - task: AzureCLI@2
         displayName: "Users Sample Data Copy"
@@ -119,10 +119,10 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az storage blob sync -c 'users' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
+            az storage blob sync -c 'users' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
 
 - stage: Build
-  displayName: Build stage
+  displayName: Build App
   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
   jobs:
   - job: BuildJob
