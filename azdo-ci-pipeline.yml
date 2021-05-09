@@ -12,7 +12,7 @@ parameters:
 - name: tfaction
   displayName: Terraform Action
   type: string
-  default: apply
+  default: plan
   values:
   - destroy
   - apply
