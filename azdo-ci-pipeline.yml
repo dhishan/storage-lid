@@ -76,7 +76,7 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: SC1
-        commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
+        # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
     # - task: ManualIntervention@8
     #   inputs:
     #     instructions: 'Please review before ${TERRAFORM_ACTION}'
@@ -88,7 +88,7 @@ stages:
         command: ${{ parameters.tfaction }}
         workingDirectory: 'terraform'
         environmentServiceName: SC1
-        commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
+        # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
 - stage: blobDataUpload
   displayName: "Data Upload"
