@@ -23,12 +23,12 @@ data "azurerm_client_config" "current" {
 
 
 resource "azurerm_resource_group" "rg" {
-  name     = var.rg_name
-  location = var.rg_location
+  name     = var.RG_NAME
+  location = var.RG_LOCATION
 }
 
 resource "azurerm_key_vault" "kv" {
-  name                       = var.kv_name
+  name                       = var.KV_NAME
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
@@ -68,20 +68,20 @@ resource "random_password" "password" {
 }
 
 resource "azuread_application" "app" {
-  display_name               = var.app_name
-  homepage                   = format("https://%s.azurewebsites.net", var.app_name)
-  identifier_uris            = [format("https://%s.azurewebsites.net", var.app_name)]
-  reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback", var.app_name)]
+  display_name               = var.SPN_APP_NAME
+  homepage                   = format("https://%s.azurewebsites.net", var.SPN_APP_NAME)
+  identifier_uris            = [format("https://%s.azurewebsites.net", var.SPN_APP_NAME)]
+  reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback", var.SPN_APP_NAME)]
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = true
 
   oauth2_permissions {
     admin_consent_description  = "Allow the application to access website on behalf of the signed-in user."
-    admin_consent_display_name = format("Allow %s", var.app_name)
+    admin_consent_display_name = format("Allow %s", var.SPN_APP_NAME)
     is_enabled                 = true
     type                       = "User"
     user_consent_description   = "Allow the application to access website on your behalf."
-    user_consent_display_name  = format("Allow %s", var.app_name)
+    user_consent_display_name  = format("Allow %s", var.SPN_APP_NAME)
     value                      = "user_impersonation"
   }
 
@@ -117,7 +117,7 @@ resource "azuread_application_password" "passwrd" {
 
 # Storage
 resource "azurerm_storage_account" "str" {
-  name                     = var.storageaccname
+  name                     = var.STR_ACC_NAME
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -144,7 +144,7 @@ resource "azurerm_storage_container" "org" {
 }
 
 # resource "azurerm_storage_account" "strlogs" {
-#   name                     = format("%slogs",var.webapp_name)
+#   name                     = format("%slogs",var.WEB_APP_NAME)
 #   resource_group_name      = azurerm_resource_group.rg.name
 #   location                 = azurerm_resource_group.rg.location
 #   account_tier             = "Standard"
@@ -160,7 +160,7 @@ resource "azurerm_storage_container" "org" {
 # App Service
 
 resource "azurerm_app_service_plan" "appserviceplan" {
-  name                = format("%s-plan", var.webapp_name)
+  name                = format("%s-plan", var.WEB_APP_NAME)
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind = "Linux"
@@ -173,7 +173,7 @@ resource "azurerm_app_service_plan" "appserviceplan" {
 }
 
 resource "azurerm_app_service" "webapp" {
-  name                = var.webapp_name
+  name                = var.WEB_APP_NAME
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan.id
@@ -201,7 +201,7 @@ resource "azurerm_app_service" "webapp" {
       client_id     = azuread_application.app.application_id
       client_secret = random_password.password.result
       allowed_audiences = [
-        format("https://%s.azurewebsites.net", var.webapp_name)
+        format("https://%s.azurewebsites.net", var.WEB_APP_NAME)
       ]
     }
   }

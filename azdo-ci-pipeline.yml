@@ -1,11 +1,4 @@
-name: "CI Pipeline"
-
-trigger:
-  branches:
-    include:
-    - main
-    exclude:
-    - secure
+name: "CD Pipeline"
 
 pool:
   vmImage: "ubuntu-latest"
@@ -14,36 +7,34 @@ parameters:
 - name: tfaction
   displayName: Terraform Action
   type: string
-  default: apply
+  default: plan
   values:
   - destroy
   - apply
   - plan
-
+  
 variables:
-  # Terraform Variables
-  webAppName: 'storage-lid'
-  storageAccName: 'orguserdatastore'
-  rgName: 'storage-lid-rg'
-  # Agent VM image name
-  # Environment name
-  environmentName: 'dev'
-  # Project root folder. Point to the folder containing manage.py file.
-  projectRoot: $(System.DefaultWorkingDirectory)
-  # Python version: 3.7
-  pythonVersion: '3.7'
+  - group: tfvars
+  - name: projectRoot
+    value: $(System.DefaultWorkingDirectory)
+  - name: pythonVersion
+    value: '3.7'
+  - name: environmentName
+    value: 'Dev'
+  - name: tfversion
+    value: 'v0.14.9'
 
 stages:
 - stage: Terraform
   displayName: Terraform
   jobs:
-  - job: terraformJob
-    displayName: "Terraform Job"
+  - job: terraformPlan
+    displayName: "Terraform Plan"
     steps:
     - task: TerraformInstaller@0
       displayName: Install Terraform
       inputs:
-        terraformVersion: 'v0.14.9'
+        terraformVersion: $(tfversion)
 
     - task: TerraformCLI@0
       displayName: Terraform Init
@@ -55,7 +46,7 @@ stages:
         backendAzureRmResourceGroupName: 'statefiles-store-rg'
         backendAzureRmStorageAccountName: 'statefilesstore'
         backendAzureRmContainerName: 'storage-lid'
-        backendAzureRmKey: 'terraform.tfstate'
+        backendAzureRmKey: 'terraform-secure.tfstate'
     
     - task: TerraformCLI@0
       displayName: Terraform Validate
@@ -69,19 +60,41 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceName: SC1
-        commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
-    # - task: ManualIntervention@8
-    #   inputs:
-    #     instructions: 'Please review before ${TERRAFORM_ACTION}'
-    #     emailRecipients: 'iamdhishan@gmail.com'
-    #     onTimeout: reject
-    - task: TerraformCLI@0
-      displayName: Terraform Apply
-      inputs:
-        command: ${{ parameters.tfaction }}
-        workingDirectory: 'terraform'
-        environmentServiceName: SC1
-        commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
+
+  - deployment: terraformApply
+    displayName: "Terraform Apply"
+    dependsOn: terraformPlan
+    condition: and(succeeded(), ne('${{ parameters.tfaction }}', 'plan'))
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: TerraformInstaller@0
+            displayName: Install Terraform
+            inputs:
+              terraformVersion: $(tfversion)
+
+          - task: TerraformCLI@0
+            displayName: Terraform Init
+            inputs:
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              backendType: 'azurerm'
+              backendServiceArm: 'SC1'
+              backendAzureRmResourceGroupName: 'statefiles-store-rg'
+              backendAzureRmStorageAccountName: 'statefilesstore'
+              backendAzureRmContainerName: 'storage-lid'
+              backendAzureRmKey: 'terraform-secure.tfstate'
+
+          - task: TerraformCLI@0
+            displayName: Terraform Apply
+            inputs:
+              command: ${{ parameters.tfaction }}
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+              environmentServiceName: 'SC1'
+              # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
 - stage: blobDataUpload
   displayName: "Data Upload"
@@ -97,7 +110,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az storage blob sync -c 'org' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
+            az storage blob sync -c 'org' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
       
       - task: AzureCLI@2
         displayName: "Users Sample Data Copy"
@@ -106,10 +119,10 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az storage blob sync -c 'users' --account-name 'orguserdatastore' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
+            az storage blob sync -c 'users' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
 
 - stage: Build
-  displayName: Build stage
+  displayName: Build App
   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
   jobs:
   - job: BuildJob
@@ -159,50 +172,9 @@ stages:
             displayName: 'Use Python version'
 
           - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App : $(webAppName)'
+            displayName: 'Deploy Azure Web App : $(TF_VAR_WEB_APP_NAME)'
             inputs:
               azureSubscription: 'SC1'
-              appName: $(webAppName)
+              appName: $(TF_VAR_WEB_APP_NAME)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-# - job: waitForValidation
-#   dependsOn: tfSetup
-#   displayName: "Wait for validation"
-#   pool: server
-#   timeoutInMinutes: 4320 # job times out in 3 days
-#   steps:   
-#    - task: ManualValidation@0
-#      timeoutInMinutes: 1440 # task times out in 1 day
-#      inputs:
-#          notifyUsers: |
-#             iamdhishan@gmail.com
-#          instructions: 'Please validate the terraform plan for $(TERRAFORM_ACTION)'
-#          onTimeout: reject
-
-# - job: deploy
-#   dependsOn: waitForValidation
-#   pool:
-#     vmImage: "ubuntu-16.04"
-#   steps:
-#   - task: TerraformInstaller@0
-#     inputs:
-#       terraformVersion: 'latest'
-
-#   - task: TerraformCLI@0
-#     displayName: Terraform Init
-#     inputs:
-#       command: init
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-#       backendType: azurerm
-#       backendServiceArm: SC1
-#       backendAzureRmResourceGroupName: 'statefiles-store-rg'
-#       backendAzureRmStorageAccountName: statefilesstore
-#       backendAzureRmContainerName: 'storage-lid'
-#       backendAzureRmKey: App.tfstate
-  
-#   - task: TerraformCLI@0
-#     inputs:
-#       command: ${{ parameters.tfaction }}
-#       workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/App'
-#       environmentServiceName: SC1
-#       runAzLogin: true
 
