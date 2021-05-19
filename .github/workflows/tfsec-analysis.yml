@@ -8,10 +8,16 @@ name: tfsec
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'terraform/**'
+      - '**.tf'
   pull_request:
-    branches: [ main ]  
-  schedule:
-    - cron: '24 13 * * 6'
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+      - '**.tf'
+#   schedule:
+#     - cron: '24 13 * * 6'
 
 jobs:
   tfsec:
