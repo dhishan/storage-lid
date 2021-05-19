@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Checkov Github Action
-        uses: bridgecrewio/checkov-action@v12.0.1
+        uses: bridgecrewio/checkov-action@master
         with:
           directory: terraform/
           # Run scan only on a specific check identifier (comma separated)
