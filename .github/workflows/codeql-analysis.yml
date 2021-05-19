@@ -9,16 +9,21 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: "CodeQL"
+name: "CodeQL Static Analysis for Python"
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**.py'
+      - 'App/**'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ main ]
-  schedule:
-    - cron: '43 0 * * 1'
+    paths:
+      - '**.py'
+#   schedule:
+#     - cron: '43 0 * * 1'
 
 jobs:
   analyze:
