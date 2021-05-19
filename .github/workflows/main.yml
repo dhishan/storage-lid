@@ -1,5 +1,5 @@
 ---
-name: Scan Code Base
+name: Terrascan
 on:
   push:
   pull_request:
