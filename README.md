@@ -18,6 +18,8 @@ An end to end automation to demonstrate access of storage account through a REST
 1. A service principal with permissions to create 
     1. Azure AD Application ( old windows azure api applications.write.ownedby permissions )
     2. Owner at the subscription Level
+1. Setup a variable group called tfvars with variables from the variables.tf. prefix TF_VAR_ for all variables
+   ![](docs/media/variable_group.png) 
 
 
 # Insights

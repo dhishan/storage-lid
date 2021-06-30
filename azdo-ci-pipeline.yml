@@ -14,7 +14,7 @@ parameters:
   - plan
   
 variables:
-  - group: tfvars
+  - group: tfvars-pe
   - name: projectRoot
     value: $(System.DefaultWorkingDirectory)
   - name: pythonVersion
@@ -45,8 +45,8 @@ stages:
         backendServiceArm: 'SC1'
         backendAzureRmResourceGroupName: 'statefiles-store-rg'
         backendAzureRmStorageAccountName: 'statefilesstore'
-        backendAzureRmContainerName: 'storage-lid'
-        backendAzureRmKey: 'terraform-secure.tfstate'
+        backendAzureRmContainerName: $(STATE_FILE_CONTAINER)
+        backendAzureRmKey: $(STATE_FILE)
     
     - task: TerraformCLI@0
       displayName: Terraform Validate
@@ -85,8 +85,8 @@ stages:
               backendServiceArm: 'SC1'
               backendAzureRmResourceGroupName: 'statefiles-store-rg'
               backendAzureRmStorageAccountName: 'statefilesstore'
-              backendAzureRmContainerName: 'storage-lid'
-              backendAzureRmKey: 'terraform-secure.tfstate'
+              backendAzureRmContainerName: $(STATE_FILE_CONTAINER)
+              backendAzureRmKey: $(STATE_FILE)
 
           - task: TerraformCLI@0
             displayName: Terraform Apply

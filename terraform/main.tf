@@ -3,7 +3,7 @@ terraform {
     # resource_group_name  = "statefiles-store-rg"
     # storage_account_name = "statefilesstore"
     # container_name       = "storage-lid"
-    # key                  = "terraform.tfstate"
+    # key                  = "pe/terraform.tfstate"
   }
 }
 
@@ -44,45 +44,33 @@ resource "azurerm_role_assignment" "kv_role" {
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-resource "azurerm_key_vault_secret" "appservicesecret" {
-  depends_on = [
-    azurerm_role_assignment.kv_role
-  ]
-  name         = "spn-secret"
-  value        = random_password.password.result
-  key_vault_id = azurerm_key_vault.kv.id
-}
-
-# access policy for the SC1 app
-
-resource "random_password" "password" {
-  depends_on = [
-    time_rotating.ninetydays
-  ]
-  length           = 32
-  special          = true
-  number           = true
-  upper            = true
-  lower            = true
-  override_special = "$-_%@#+="
-}
+data "azuread_client_config" "current" {}
 
 resource "azuread_application" "app" {
   display_name               = var.SPN_APP_NAME
-  homepage                   = format("https://%s.azurewebsites.net", var.SPN_APP_NAME)
   identifier_uris            = [format("https://%s.azurewebsites.net", var.SPN_APP_NAME)]
-  reply_urls                 = [format("https://%s.azurewebsites.net/.auth/login/aad/callback", var.SPN_APP_NAME)]
-  available_to_other_tenants = false
-  oauth2_allow_implicit_flow = true
+  owners           = [data.azuread_client_config.current.object_id]
+  sign_in_audience = "AzureADMyOrg" # available_to_other_tenants = false
+  # oauth2_allow_implicit_flow = true
 
-  oauth2_permissions {
-    admin_consent_description  = "Allow the application to access website on behalf of the signed-in user."
-    admin_consent_display_name = format("Allow %s", var.SPN_APP_NAME)
-    is_enabled                 = true
-    type                       = "User"
-    user_consent_description   = "Allow the application to access website on your behalf."
-    user_consent_display_name  = format("Allow %s", var.SPN_APP_NAME)
-    value                      = "user_impersonation"
+  web {
+    homepage_url = format("https://%s.azurewebsites.net", var.SPN_APP_NAME)
+    redirect_uris = [format("https://%s.azurewebsites.net/.auth/login/aad/callback", var.SPN_APP_NAME)]
+    implicit_grant {
+      access_token_issuance_enabled = true
+    }
+  }
+
+  api {
+    oauth2_permission_scope {
+      admin_consent_description  = "Allow the application to access website on behalf of the signed-in user."
+      admin_consent_display_name = format("Allow %s", var.SPN_APP_NAME)
+      id                         = "f7957771-325b-48a5-8f78-5a949ee5ba19"
+      type                       = "User"
+      user_consent_description   = "Allow the application to access website on your behalf."
+      user_consent_display_name  = format("Allow %s", var.SPN_APP_NAME)
+      value                      = "user_impersonation"
+    }
   }
 
   required_resource_access {
@@ -96,23 +84,25 @@ resource "azuread_application" "app" {
 }
 
 resource "time_rotating" "ninetydays" {
-  rotation_days = 90
+  rotation_days = 80
 }
 
-resource "azuread_application_password" "passwrd" {
-  lifecycle {
-    ignore_changes = [
-      end_date
-    ]
-  }
+resource "azuread_application_password" "app_password" {
   depends_on = [
     time_rotating.ninetydays
   ]
-
+  display_name = "App Password"
   application_object_id = azuread_application.app.object_id
-  description           = "V1"
-  value                 = random_password.password.result
-  end_date              = timeadd(timestamp(), "8760h") # one year
+  end_date_relative = "2160h"
+}
+
+resource "azurerm_key_vault_secret" "appservicesecret" {
+  depends_on = [
+    azurerm_role_assignment.kv_role
+  ]
+  name         = "spn-secret"
+  value        = azuread_application_password.app_password.value
+  key_vault_id = azurerm_key_vault.kv.id
 }
 
 # Storage
@@ -166,9 +156,10 @@ resource "azurerm_app_service_plan" "appserviceplan" {
   kind = "Linux"
   reserved = true
 
+# Minimum SKU required for vnet integration
   sku {
-    tier = "Basic"
-    size = "B1"
+    tier = "Standard"
+    size = "S1"
   }
 }
 
@@ -180,7 +171,6 @@ resource "azurerm_app_service" "webapp" {
 
   site_config {
     linux_fx_version = "PYTHON|3.7"
-    # python_version = "3.4"
   }
 
   app_settings = {
@@ -199,7 +189,7 @@ resource "azurerm_app_service" "webapp" {
 
     active_directory {
       client_id     = azuread_application.app.application_id
-      client_secret = random_password.password.result
+      client_secret = azuread_application_password.app_password.value
       allowed_audiences = [
         format("https://%s.azurewebsites.net", var.WEB_APP_NAME)
       ]
@@ -208,7 +198,13 @@ resource "azurerm_app_service" "webapp" {
 
 }
 
-# Permission the App Service Idenity to access Storage Account
+# Vnet Integration to access data in storage account
+resource "azurerm_app_service_virtual_network_swift_connection" "vnet_integration" {
+  app_service_id = azurerm_app_service.webapp.id
+  subnet_id      = azurerm_subnet.app_subnet[0].id
+}
+
+# # Permission the App Service Idenity to access Storage Account
 resource "azurerm_role_assignment" "str_read" {
   scope                = azurerm_storage_account.str.id
   role_definition_name = "Storage Blob Data Reader"
