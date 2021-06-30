@@ -22,7 +22,7 @@ variables:
   - name: environmentName
     value: 'Dev'
   - name: tfversion
-    value: 'v0.14.9'
+    value: 'v1.0.1'
 
 stages:
 - stage: Terraform
