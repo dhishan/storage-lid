@@ -1,10 +1,11 @@
 terraform {
   backend "azurerm" {
-    # resource_group_name  = "statefiles-store-rg"
-    # storage_account_name = "statefilesstore"
-    # container_name       = "storage-lid"
-    # key                  = "pe/terraform.tfstate"
+    resource_group_name  = "statefiles-store-rg"
+    storage_account_name = "statefilesstore"
+    container_name       = "storage-lid"
+    key                  = "pe/terraform.tfstate"
   }
+  # experiments = [module_variable_optional_attrs]
 }
 
 provider "azurerm" {
@@ -84,7 +85,7 @@ resource "azuread_application" "app" {
 }
 
 resource "time_rotating" "ninetydays" {
-  rotation_days = 80
+  rotation_days = 90
 }
 
 resource "azuread_application_password" "app_password" {
@@ -113,12 +114,12 @@ resource "azurerm_storage_account" "str" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  # network_rules {
-  #   default_action             = "Deny"
-  #   ip_rules                   = var.str_ip_rules
-  #   bypass = [ "Logging", "Metrics", "AzureServices" ]
-  #   # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
-  # }
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = var.str_ip_rules
+    bypass = [ "Logging", "Metrics", "AzureServices" ]
+    # virtual_network_subnet_ids = [azurerm_subnet.app_subnet.id]
+  }
 }
 
 resource "azurerm_storage_container" "users" {
@@ -201,7 +202,7 @@ resource "azurerm_app_service" "webapp" {
 # Vnet Integration to access data in storage account
 resource "azurerm_app_service_virtual_network_swift_connection" "vnet_integration" {
   app_service_id = azurerm_app_service.webapp.id
-  subnet_id      = azurerm_subnet.app_subnet[0].id
+  subnet_id      = azurerm_subnet.app_subnet.id
 }
 
 # # Permission the App Service Idenity to access Storage Account

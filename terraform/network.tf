@@ -10,13 +10,47 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = var.NETWORK.address_space
 }
 
+# resource "azurerm_subnet" "app_subnet" {
+#   count = length(var.NETWORK.subnets)
+#   name                 = var.NETWORK.subnets[count.index].name
+#   resource_group_name  = azurerm_resource_group.networkrg.name
+#   virtual_network_name = azurerm_virtual_network.vnet.name
+#   address_prefixes     = var.NETWORK.subnets[count.index].address_space
+#   enforce_private_link_endpoint_network_policies = var.NETWORK.subnets[count.index].enable_pl_policy
+
+#   dynamic "delegation" {
+#       for_each = var.NETWORK.subnets[count.index].delegation == null ? [] : [1]
+#       content {
+#             name = "delegation"
+#             service_delegation {
+#                 name = var.NETWORK.subnets[count.index].delegation.name
+#                 actions = var.NETWORK.subnets[count.index].delegation.actions
+#             }
+#       }
+#   }
+# }
+
 resource "azurerm_subnet" "app_subnet" {
-  count = length(var.NETWORK.subnets)
-  name                 = var.NETWORK.subnets[count.index].name
+  name                 = var.app_subnet.name
   resource_group_name  = azurerm_resource_group.networkrg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = var.NETWORK.subnets[count.index].address_space
-  enforce_private_link_endpoint_network_policies = var.NETWORK.subnets[count.index].enable_pl_policy
+  address_prefixes     = var.app_subnet.address_space
+
+  delegation {
+    name = "webapp_delegation"
+    service_delegation {
+        name = "Microsoft.Web/serverFarms"
+        actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
+    }
+  }
+}
+
+resource "azurerm_subnet" "pep_subnet" {
+  name                 = var.pep_subnet.name
+  resource_group_name  = azurerm_resource_group.networkrg.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = var.pep_subnet.address_space
+  enforce_private_link_endpoint_network_policies = true
 }
 
 resource "azurerm_private_dns_zone" "dnszone" {
@@ -35,7 +69,7 @@ resource "azurerm_private_endpoint" "pep" {
   name                = format("%s-endpoint",var.STR_ACC_NAME)
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  subnet_id           = azurerm_subnet.app_subnet[0].id
+  subnet_id           = azurerm_subnet.pep_subnet.id
 
   private_service_connection {
     name                              = format("%s-endpoint-connection",var.STR_ACC_NAME)
