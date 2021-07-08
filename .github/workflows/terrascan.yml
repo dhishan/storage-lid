@@ -1,9 +1,13 @@
 ---
-name: Scan Code Base
+name: Terrascan
 on:
   push:
+    paths:
+      - 'terraform/**'
   pull_request:
     branches: [master]
+    paths:
+      -  'terraform/**'
 jobs:
   build:
     name: Scan Code Base
