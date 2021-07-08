@@ -60,6 +60,7 @@ stages:
         provider: 'azurerm'
         command: 'plan'
         environmentServiceNameAzureRM: 'SC1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
     
   - deployment: terraformApply
     displayName: "Terraform Apply"
