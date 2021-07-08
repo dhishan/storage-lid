@@ -37,6 +37,7 @@ stages:
         terraformVersion: $(tfversion)
     
     - task: TerraformTaskV2@2
+      displayName: Terraform Init
       inputs:
         provider: 'azurerm'
         command: 'init'
@@ -78,6 +79,7 @@ stages:
               terraformVersion: $(tfversion)
     
           - task: TerraformTaskV2@2
+            displayName: Install Init
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -94,7 +96,7 @@ stages:
               provider: 'azurerm'
               command: ${{ parameters.tfaction }}
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-              environmentServiceName: 'SC1'
+              environmentServiceNameAzureRM: 'SC1'
               # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
 # - stage: blobDataUpload
