@@ -35,32 +35,32 @@ stages:
       displayName: Install Terraform
       inputs:
         terraformVersion: $(tfversion)
-
-    - task: TerraformCLI@0
-      displayName: Terraform Init
+    
+    - task: TerraformTaskV2@2
       inputs:
+        provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        backendType: 'azurerm'
         backendServiceArm: 'SC1'
         backendAzureRmResourceGroupName: 'statefiles-store-rg'
         backendAzureRmStorageAccountName: 'statefilesstore'
-        backendAzureRmContainerName: $(STATE_FILE_CONTAINER)
-        backendAzureRmKey: $(STATE_FILE)
-    
-    - task: TerraformCLI@0
+        backendAzureRmContainerName: '$(STATE_FILE_CONTAINER)'
+        backendAzureRmKey: '$(STATE_FILE)'
+
+    - task: TerraformTaskV2@2
       displayName: Terraform Validate
       inputs:
+        provider: 'azurerm'
         command: 'validate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        
-    - task: TerraformCLI@0
+
+    - task: TerraformTaskV2@2
       displayName: Terraform Plan
       inputs:
+        provider: 'azurerm'
         command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceName: SC1
-
+        environmentServiceNameAzureRM: 'SC1'
+    
   - deployment: terraformApply
     displayName: "Terraform Apply"
     dependsOn: terraformPlan
@@ -75,22 +75,22 @@ stages:
             displayName: Install Terraform
             inputs:
               terraformVersion: $(tfversion)
-
-          - task: TerraformCLI@0
-            displayName: Terraform Init
+    
+          - task: TerraformTaskV2@2
             inputs:
+              provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-              backendType: 'azurerm'
               backendServiceArm: 'SC1'
               backendAzureRmResourceGroupName: 'statefiles-store-rg'
               backendAzureRmStorageAccountName: 'statefilesstore'
-              backendAzureRmContainerName: $(STATE_FILE_CONTAINER)
-              backendAzureRmKey: $(STATE_FILE)
+              backendAzureRmContainerName: '$(STATE_FILE_CONTAINER)'
+              backendAzureRmKey: '$(STATE_FILE)'
 
-          - task: TerraformCLI@0
-            displayName: Terraform Apply
+          - task: TerraformTaskV2@2
+            displayName: Terraform ${{ parameters.tfaction }}
             inputs:
+              provider: 'azurerm'
               command: ${{ parameters.tfaction }}
               workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
               environmentServiceName: 'SC1'
