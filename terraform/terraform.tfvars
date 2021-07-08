@@ -1,9 +1,9 @@
-RG_NAME = "storage-lid-pe-rg"
-KV_NAME     = "storagelidpekv"
-RG_LOCATION = "East US"
-SPN_APP_NAME    = "storage-lid-pe"
-WEB_APP_NAME = "storage-lid-pe"
-STR_ACC_NAME = "orguserdatastorepe"
+# RG_NAME = "storage-lid-pe-rg"
+# KV_NAME     = "storagelidpekv"
+# RG_LOCATION = "East US"
+# SPN_APP_NAME    = "storage-lid-pe"
+# WEB_APP_NAME = "storage-lid-pe"
+# STR_ACC_NAME = "orguserdatastorepe"
 # NETWORK = {
 #     name = "storage-lid-vnet"
 #     address_space = ["10.0.0.0/16"]
@@ -24,7 +24,7 @@ STR_ACC_NAME = "orguserdatastorepe"
 #     }
 #     ]
 # }
-ENV = "dev"
+# ENV = "dev"
 str_ip_rules = ["72.76.142.107"]
 
 NETWORK = {

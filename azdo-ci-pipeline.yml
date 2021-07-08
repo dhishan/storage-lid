@@ -96,31 +96,23 @@ stages:
               environmentServiceName: 'SC1'
               # commandOptions: '-var="webapp_name=$(webAppName)" -var="storageaccname=$(storageAccName)" -var="rg_name=$(rgName)"'
 
-- stage: blobDataUpload
-  displayName: "Data Upload"
-  condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
-  jobs:
-  - job: blobDataUpload
-    displayName: Upload sample data
-    steps:
-      - task: AzureCLI@2
-        displayName: "Org Sample Data Copy"
-        inputs:
-          azureSubscription: 'SC1'
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            az storage blob sync -c 'org' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
+# - stage: blobDataUpload
+#   displayName: "Data Upload"
+#   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))
+#   jobs:
+#   - job: blobDataUpload
+#     displayName: Upload sample data
+#     steps:
+#       - task: AzureCLI@2
+#         displayName: "Sample Data Copy"
+#         inputs:
+#           azureSubscription: 'SC1'
+#           scriptType: 'bash'
+#           scriptLocation: 'inlineScript'
+#           inlineScript: |
+#             az storage blob sync -c 'org' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
+#             az storage blob sync -c 'users' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
       
-      - task: AzureCLI@2
-        displayName: "Users Sample Data Copy"
-        inputs:
-          azureSubscription: 'SC1'
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            az storage blob sync -c 'users' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
-
 - stage: Build
   displayName: Build App
   condition: and(succeeded(), eq('${{ parameters.tfaction }}', 'apply'))

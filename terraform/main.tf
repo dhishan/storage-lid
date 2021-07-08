@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "statefiles-store-rg"
-    storage_account_name = "statefilesstore"
-    container_name       = "storage-lid"
-    key                  = "pe/terraform.tfstate"
+    # resource_group_name  = "statefiles-store-rg"
+    # storage_account_name = "statefilesstore"
+    # container_name       = "storage-lid"
+    # key                  = "pe/terraform.tfstate"
   }
   # experiments = [module_variable_optional_attrs]
 }
@@ -122,17 +122,17 @@ resource "azurerm_storage_account" "str" {
   }
 }
 
-resource "azurerm_storage_container" "users" {
-  name                  = "users"
-  storage_account_name  = azurerm_storage_account.str.name
-  container_access_type = "private"
-}
+# resource "azurerm_storage_container" "users" {
+#   name                  = "users"
+#   storage_account_name  = azurerm_storage_account.str.name
+#   container_access_type = "private"
+# }
 
-resource "azurerm_storage_container" "org" {
-  name                  = "org"
-  storage_account_name  = azurerm_storage_account.str.name
-  container_access_type = "private"
-}
+# resource "azurerm_storage_container" "org" {
+#   name                  = "org"
+#   storage_account_name  = azurerm_storage_account.str.name
+#   container_access_type = "private"
+# }
 
 # resource "azurerm_storage_account" "strlogs" {
 #   name                     = format("%slogs",var.WEB_APP_NAME)
