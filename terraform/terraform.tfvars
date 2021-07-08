@@ -4,6 +4,8 @@
 # SPN_APP_NAME    = "storage-lid-pe"
 # WEB_APP_NAME = "storage-lid-pe"
 # STR_ACC_NAME = "orguserdatastorepe"
+# ENV = "dev"
+# 
 # NETWORK = {
 #     name = "storage-lid-vnet"
 #     address_space = ["10.0.0.0/16"]
@@ -24,7 +26,6 @@
 #     }
 #     ]
 # }
-# ENV = "dev"
 str_ip_rules = ["72.76.142.107"]
 
 NETWORK = {
