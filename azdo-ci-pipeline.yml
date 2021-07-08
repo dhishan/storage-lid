@@ -25,6 +25,15 @@ variables:
     value: 'v1.0.1'
 
 stages:
+- stage: Test
+  jobs:
+  - job: testbash
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: 'curl -s http://ipinfo.io/json | jq ''.ip'''
+        
 - stage: Terraform
   displayName: Terraform
   jobs:
