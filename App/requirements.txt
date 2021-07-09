@@ -3,3 +3,4 @@ azure-storage-blob
 azure-identity
 connexion
 connexion[swagger-ui]
+opencensus

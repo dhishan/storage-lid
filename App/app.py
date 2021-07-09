@@ -1,11 +1,19 @@
 from flask import Flask, render_template, redirect, url_for
-import connexion
-
+import connexion, os
+from opencensus.ext.azure.trace_exporter import AzureExporter
+from opencensus.ext.flask.flask_middleware import FlaskMiddleware
+from opencensus.trace.samplers import ProbabilitySampler
 # app = Flask(__name__)
 
 app = connexion.FlaskApp(__name__, specification_dir='./')
 # app.add_api('swagger.yml', base_path='/1.0')
 app.add_api('swagger.yml')
+instrumentation_key = os.environ['APP_IKEY']
+middleware = FlaskMiddleware(
+    app,
+    exporter=AzureExporter(connection_string=instrumentation_key),
+    sampler=ProbabilitySampler(rate=1.0),
+)
 
 @app.route("/")
 def index():

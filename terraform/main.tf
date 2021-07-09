@@ -150,6 +150,12 @@ resource "azurerm_storage_account" "str" {
 
 # App Service
 
+resource "azurerm_application_insights" "appinsights" {
+  name                = format("%s-appinsights", var.WEB_APP_NAME)
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  application_type    = "web"
+}
 resource "azurerm_app_service_plan" "appserviceplan" {
   name                = format("%s-plan", var.WEB_APP_NAME)
   location            = azurerm_resource_group.rg.location
@@ -176,6 +182,7 @@ resource "azurerm_app_service" "webapp" {
 
   app_settings = {
     "STORAGE_URI" = azurerm_storage_account.str.primary_blob_endpoint
+    "APP_IKEY" = azurerm_application_insights.appinsights.instrumentation_key
   }
 
   identity {
