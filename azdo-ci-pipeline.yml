@@ -17,8 +17,6 @@ variables:
   - group: tfvars-pe
   - name: projectRoot
     value: $(System.DefaultWorkingDirectory)
-  - name: pythonVersion
-    value: '3.7'
   - name: environmentName
     value: 'Dev'
   - name: tfversion
@@ -136,8 +134,8 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '$(pythonVersion)'
-      displayName: 'Use Python $(pythonVersion)'
+        versionSpec: '$(TF_VAR_PY_VERSION)'
+      displayName: 'Use Python $(TF_VAR_PY_VERSION)'
 
     - script: |
         python -m venv antenv
@@ -175,7 +173,7 @@ stages:
 
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '$(pythonVersion)'
+              versionSpec: '$(TF_VAR_PY_VERSION)'
             displayName: 'Use Python version'
 
           - task: AzureWebApp@1
@@ -185,5 +183,5 @@ stages:
               appType: 'webAppLinux'
               appName: '$(TF_VAR_WEB_APP_NAME)'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-              runtimeStack: 'PYTHON|3.7'
+              runtimeStack: format('PYTHON|{0}',$(TF_VAR_PY_VERSION))
 

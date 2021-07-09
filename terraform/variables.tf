@@ -5,6 +5,7 @@ variable "RG_NAME" {}
 variable "RG_LOCATION" {}
 variable "SPN_APP_NAME" {}
 variable "ENV" {}
+variable "PY_VERSION" {}
 variable "str_ip_rules" {
   type = list(string)
   default = []
