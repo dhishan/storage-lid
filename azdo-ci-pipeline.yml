@@ -182,6 +182,8 @@ stages:
             displayName: 'Deploy Azure Web App : $(TF_VAR_WEB_APP_NAME)'
             inputs:
               azureSubscription: 'SC1'
-              appName: $(TF_VAR_WEB_APP_NAME)
-              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
+              appType: 'webAppLinux'
+              appName: '$(TF_VAR_WEB_APP_NAME)'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              runtimeStack: 'PYTHON|3.7'
 
