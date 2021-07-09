@@ -183,5 +183,5 @@ stages:
               appType: 'webAppLinux'
               appName: '$(TF_VAR_WEB_APP_NAME)'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-              runtimeStack: ${{ format('PYTHON|{0}',$(TF_VAR_PY_VERSION)) }}
+              runtimeStack: format('PYTHON|{0}',$(TF_VAR_PY_VERSION))
 
