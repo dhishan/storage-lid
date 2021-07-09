@@ -40,7 +40,7 @@ resource "azurerm_subnet" "app_subnet" {
     name = "webapp_delegation"
     service_delegation {
         name = "Microsoft.Web/serverFarms"
-        actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
+        actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
 }
