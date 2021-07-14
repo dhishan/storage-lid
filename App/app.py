@@ -14,16 +14,16 @@ from applicationinsights.flask.ext import AppInsights
 
 app = connexion.FlaskApp(__name__, specification_dir='./')
 # app.add_api('swagger.yml', base_path='/1.0')
+application = app.app
 
 app.add_api('swagger.yml')
 instrumentation_key = None
 if 'APP_IKEY' in os.environ:
     instrumentation_key = os.environ['APP_IKEY']
-    app.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = instrumentation_key
+    application.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = instrumentation_key
     appinsights = AppInsights(app)
 
 streamHandler = logging.StreamHandler()
-application = app.app
 # application.logger.addHandler(streamHandler)
 application.logger.setLevel(logging.DEBUG)
 
