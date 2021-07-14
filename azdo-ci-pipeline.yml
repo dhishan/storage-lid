@@ -110,8 +110,8 @@ stages:
           targetType: 'inline'
           script: |
             IP=`curl -s http://ipinfo.io/json | jq '.ip'`
-            echo '##vso[task.setvariable variable=buildagentip]$IP'
-            echo 'Build agent IP is $IP'
+            echo "##vso[task.setvariable variable=IP]$IP"
+            echo "Build agent IP is $IP"
       - task: AzureCLI@2
         displayName: "Sample Data Copy"
         inputs:
@@ -119,12 +119,12 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az storage account network-rule add --account-name '$(TF_VAR_STR_ACC_NAME)' -g '$(TF_VAR_RG_NAME)' --ip-address $(buildagentip)
+            az storage account network-rule add --account-name '$(TF_VAR_STR_ACC_NAME)' -g '$(TF_VAR_RG_NAME)' --ip-address $(IP)
             az storage container create --name 'org' --account-name '$(TF_VAR_STR_ACC_NAME)'
             az storage container create --name 'users' --account-name '$(TF_VAR_STR_ACC_NAME)'
             az storage blob sync -c 'org' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/org'
             az storage blob sync -c 'users' --account-name '$(TF_VAR_STR_ACC_NAME)' -s '$(System.DefaultWorkingDirectory)/sampledata/users'
-            az storage account network-rule remove --account-name '$(TF_VAR_STR_ACC_NAME)' -g '$(TF_VAR_RG_NAME)' --ip-address $(buildagentip)
+            az storage account network-rule remove --account-name '$(TF_VAR_STR_ACC_NAME)' -g '$(TF_VAR_RG_NAME)' --ip-address $(IP)
       
 - stage: Build
   displayName: Build App
