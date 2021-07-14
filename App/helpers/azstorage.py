@@ -1,4 +1,5 @@
-from azure.identity import DefaultAzureCredential
+from posix import environ
+from azure.identity import DefaultAzureCredential, ChainedTokenCredential, ManagedIdentityCredential, AzureCliCredential, EnvironmentCredential
 from azure.storage.blob import BlobServiceClient
 import os, json
 from flask import current_app
@@ -8,7 +9,11 @@ def blob_service_client():
         current_app.logger.info("Getting blob service client")
         storage_account_url = os.environ['STORAGE_URI']
         # storage_account_url = "https://datastrdhishan.blob.core.windows.net/"
-        token_credential = DefaultAzureCredential()
+        # token_credential = DefaultAzureCredential(logging_enable=True)
+        managed_identity = ManagedIdentityCredential()
+        azure_cli = AzureCliCredential()
+        environment_cred = EnvironmentCredential()
+        token_credential = ChainedTokenCredential(managed_identity, environment_cred,azure_cli )
         return BlobServiceClient(
                 account_url=storage_account_url,
                 credential=token_credential
