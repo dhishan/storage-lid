@@ -17,13 +17,13 @@ app = connexion.FlaskApp(__name__, specification_dir='./')
 application = app.app
 
 app.add_api('swagger.yml')
-instrumentation_key = None
-if 'APP_IKEY' in os.environ:
-    instrumentation_key = os.environ['APP_IKEY']
-    application.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = instrumentation_key
-    appinsights = AppInsights(app)
+# instrumentation_key = None
+# if 'APP_IKEY' in os.environ:
+#     instrumentation_key = os.environ['APP_IKEY']
+#     application.config['APPINSIGHTS_INSTRUMENTATIONKEY'] = instrumentation_key
+#     appinsights = AppInsights(app)
 
-streamHandler = logging.StreamHandler()
+# streamHandler = logging.StreamHandler()
 # application.logger.addHandler(streamHandler)
 application.logger.setLevel(logging.DEBUG)
 
@@ -34,12 +34,12 @@ def index():
     # return render_template('home.html')
     return redirect('/api/ui/')
 
-@application.after_request
-def after_request(response):
-    if instrumentation_key is not None:
-        application.logger.debug('sending to app insights')
-        appinsights.flush()
-    return response
+# @application.after_request
+# def after_request(response):
+#     if instrumentation_key is not None:
+#         application.logger.debug('sending to app insights')
+#         appinsights.flush()
+#     return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
