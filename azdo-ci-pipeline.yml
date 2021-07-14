@@ -110,7 +110,7 @@ stages:
           targetType: 'inline'
           script: |
             IP=`curl -s http://ipinfo.io/json | jq '.ip'`
-            echo "##vso[task.setvariable variable=IP]$IP"
+            echo "##vso[task.setvariable variable=IP]$IP/32"
             echo "Build agent IP is $IP"
       - task: AzureCLI@2
         displayName: "Sample Data Copy"
