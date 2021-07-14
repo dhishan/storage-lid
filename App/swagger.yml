@@ -67,6 +67,10 @@ paths:
             type: array
             items:
               type: string
+        "400":
+          description: "Error Retrieving Users"
+          schema:
+            $ref: '#/definitions/exception'
   /users/{name}:
     get:
       tags:
@@ -91,9 +95,11 @@ paths:
         "400":
           description: "Invalid Name supplied"
           schema:
-            $ref: '#/definitions/notfound'
+            $ref: '#/definitions/exception'
         "404":
           description: "User not found"
+          schema:
+            $ref: '#/definitions/notfound'
 definitions:
   org:
     type: "object"
@@ -121,6 +127,15 @@ definitions:
       id: 1
   notfound:
     type: "string"
+  exception:
+    type: "object"
+    properties:
+      msg:
+        type: "string"
+        format: "string"
+      code:
+        type: "integer"
+        format: "integer"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

@@ -42,3 +42,6 @@ curl -s http://ipinfo.io/json | jq '.ip'
 
 2. For instructions on running and deploying the code, see [Quickstart: Create a Python app in Azure App Service on Linux](https://docs.microsoft.com/azure/app-service/quickstart-python).
 
+3. OpenConsensus
+https://github.com/Azure-Samples/azure-monitor-opencensus-python/blob/master/azure_monitor/python_logger_opencensus_azure/README.md
+
